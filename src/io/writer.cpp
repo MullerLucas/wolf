@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "utils.h"
+#include "../utils.h"
 #include "writer.h"
 
 
@@ -25,7 +25,7 @@ void ConsoleWriter::writeln(const std::string& data) {
 
 // ----------------------------------------------
 
-FileWriter::FileWriter(const char* filename) {
+FileWriter::FileWriter(std::string filename) : filename(filename) {
     file_stream.open(filename);
     assert(file_stream.is_open());
 }

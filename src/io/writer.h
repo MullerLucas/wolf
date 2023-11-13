@@ -27,7 +27,7 @@ public:
 
 class FileWriter : public Writer {
 public:
-    FileWriter(const char* filename);
+    FileWriter(std::string file_name);
     void writeln(const std::string& data) override;
     ~FileWriter() override;
 

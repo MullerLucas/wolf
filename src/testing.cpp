@@ -5,7 +5,6 @@
 
 #include "utils.h"
 #include "testing.h"
-#include "writer.h"
 
 namespace wolf {
 
