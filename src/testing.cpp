@@ -17,11 +17,11 @@ std::vector<std::string> generate_test_data(usize width, b32 shuffle) {
 
     log_info("Generating %d combinations for len %i\n", total_combinations, width);
 
-    for (int i = 0; i < total_combinations; ++i) {
+    for (u32 i = 0; i < total_combinations; ++i) {
         std::string combination(width, 'A');
         int temp = i;
 
-        for (int j = 0; j < width; j++) {
+        for (usize j = 0; j < width; j++) {
             combination[width - 1 - j] = static_cast<char>('A' + temp % 26);
             temp /= 26;
         }

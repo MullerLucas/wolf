@@ -1,3 +1,6 @@
+#pragma once
+
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <vector>
@@ -25,14 +28,26 @@ namespace wolf {
 
 void log_info(const char* format, ...);
 
-}
 
 // ----------------------------------------------
-
-namespace wolf {
 
 std::vector<std::string> read_stdin();
 
-}
 
 // ----------------------------------------------
+
+class Timer {
+public:
+    Timer();
+    void restart();
+    void stop();
+    std::chrono::milliseconds elapsed_ms() const;
+    std::chrono::microseconds elapsed_us() const;
+
+private:
+    std::chrono::high_resolution_clock::time_point start_time;
+    std::chrono::high_resolution_clock::time_point end_time;
+};
+
+// ----------------------------------------------
+}

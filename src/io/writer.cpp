@@ -11,9 +11,15 @@ namespace wolf {
 
 // ----------------------------------------------
 
-void Writer::writeln(const std::vector<std::string>& data) {
+void Writer::writeln_all(const std::vector<std::string>& data) {
     for (const auto& d : data) {
-        this->writeln(d.c_str());
+        this->writeln(d);
+    }
+}
+
+void Writer::writeln_all(const std::vector<const std::string*>& data) {
+    for (const auto& d : data) {
+        this->writeln(*d);
     }
 }
 

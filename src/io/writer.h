@@ -12,7 +12,8 @@ namespace wolf {
 class Writer {
 public:
     virtual void writeln(const std::string& data) = 0;
-    virtual void writeln(const std::vector<std::string>& data);
+    virtual void writeln_all(const std::vector<std::string>& data);
+    virtual void writeln_all(const std::vector<const std::string*>& data);
     virtual ~Writer() = default;
 };
 
