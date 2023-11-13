@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 
 namespace wolf {
@@ -10,7 +11,8 @@ namespace wolf {
 
 class Writer {
 public:
-    virtual void write(const std::string& data) = 0;
+    virtual void writeln(const std::string& data) = 0;
+    virtual void writeln(const std::vector<std::string>& data);
     virtual ~Writer() = default;
 };
 
@@ -18,15 +20,15 @@ public:
 
 class ConsoleWriter : public Writer {
 public:
-    void write(const std::string& data) override;
+    void writeln(const std::string& data) override;
 };
 
 // ----------------------------------------------
 
 class FileWriter : public Writer {
 public:
-    FileWriter(const std::string& filename);
-    void write(const std::string& data) override;
+    FileWriter(const char* filename);
+    void writeln(const std::string& data) override;
     ~FileWriter() override;
 
 private:

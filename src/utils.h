@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <assert.h>
 
 // ----------------------------------------------
 
@@ -22,7 +23,7 @@ typedef int32_t b32;
 
 namespace wolf {
 
-void log_info(const char* msg);
+void log_info(const char* format, ...);
 
 }
 
