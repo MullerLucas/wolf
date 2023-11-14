@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <algorithm>
 #include <bits/chrono.h>
 #include <cwchar>
 #include <iostream>
@@ -20,7 +21,9 @@ void log_info(const char* format, ...) {
     va_end(args);
 }
 
-b32 string_starts_with(const std::string& str, const std::string& prefix, usize offset) {
+// ----------------------------------------------
+
+b8 string_starts_with(const std::string& str, const std::string& prefix, usize offset) {
     if (prefix.size() > str.size()) {
         return false;
     }

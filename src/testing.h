@@ -9,6 +9,6 @@
 
 namespace wolf {
 
-std::vector<std::string> generate_test_data(usize width, b32 shuffle);
+std::vector<std::string> generate_test_data(usize width, b8 shuffle);
 
 }

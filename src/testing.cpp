@@ -8,7 +8,7 @@
 
 namespace wolf {
 
-std::vector<std::string> generate_test_data(usize width, b32 shuffle) {
+std::vector<std::string> generate_test_data(usize width, b8 shuffle) {
     assert(width <= 26);
 
     u32 total_combinations = static_cast<int>(std::pow(26, width));
