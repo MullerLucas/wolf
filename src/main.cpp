@@ -5,6 +5,7 @@
 #include "testing.h"
 #include "io/writer.h"
 #include "io/reader.h"
+#include "filter/filter.h"
 #include "filter/simple_filter.h"
 
 #include "utils.cpp"
@@ -12,7 +13,6 @@
 #include "io/writer.cpp"
 #include "io/reader.cpp"
 #include "filter/simple_filter.cpp"
-
 
 
 int main() {
@@ -23,8 +23,8 @@ int main() {
         std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_1.txt");
         auto input = reader->readln_all();
 
-        SimpleFilter filter;
-        const auto output = filter.filter("AAA", input, 20);
+        std::unique_ptr<Filter> filter = std::make_unique<LockFreeListFilter>(&input, 4);
+        const auto output = filter->filter("BBC");
 
         std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
         writer->writeln_all(output);

@@ -1,26 +1,34 @@
 #pragma once
 
-#include "../utils.h"
 #include <string>
 #include <vector>
 
+#include "../utils.h"
+#include "filter.h"
+
 namespace wolf {
 
-class SimpleFilter {
+// ----------------------------------------------
+
+class LockFreeListFilter : public Filter {
 public:
-    std::vector<const std::string*> filter(
-        const std::string& pattern,
-        const std::vector<std::string>& input,
-        usize num_threads
-    );
+    LockFreeListFilter(const Input* input, usize num_threads);
+
+    const Output& filter(const std::string& pattern) override;
+
 private:
+    const Input* input;
+    Output output;
+    usize num_threads;
+
     static void process_workload(
+        Output& output,
         const std::string& pattern,
-        const std::vector<std::string>& input,
-        std::vector<const std::string*>& output,
         usize start,
         usize end
     );
 };
+
+// ----------------------------------------------
 
 }
