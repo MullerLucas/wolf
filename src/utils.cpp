@@ -36,24 +36,24 @@ b32 string_starts_with(const std::string& str, const std::string& prefix, usize 
 
 // ----------------------------------------------
 
-Timer::Timer() : start_time(std::chrono::high_resolution_clock::now()), end_time(start_time)
+Timer::Timer() : start_time_(std::chrono::high_resolution_clock::now()), end_time_(start_time_)
 {}
 
 void Timer::restart() {
-    start_time = std::chrono::high_resolution_clock::now();
-    end_time = start_time;
+    start_time_ = std::chrono::high_resolution_clock::now();
+    end_time_   = start_time_;
 }
 
 void Timer::stop() {
-    end_time = std::chrono::high_resolution_clock::now();
+    end_time_ = std::chrono::high_resolution_clock::now();
 }
 
 std::chrono::milliseconds Timer::elapsed_ms() const {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    return std::chrono::duration_cast<std::chrono::milliseconds>(end_time_ - start_time_);
 }
 
 std::chrono::microseconds Timer::elapsed_us() const {
-    return std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    return std::chrono::duration_cast<std::chrono::microseconds>(end_time_ - start_time_);
 }
 
 // ----------------------------------------------

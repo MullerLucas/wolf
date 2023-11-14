@@ -34,14 +34,15 @@ b32 string_starts_with(const std::string& str, const std::string& prefix, usize 
 class Timer {
 public:
     Timer();
+
     void restart();
     void stop();
     std::chrono::milliseconds elapsed_ms() const;
     std::chrono::microseconds elapsed_us() const;
 
 private:
-    std::chrono::high_resolution_clock::time_point start_time;
-    std::chrono::high_resolution_clock::time_point end_time;
+    std::chrono::high_resolution_clock::time_point start_time_;
+    std::chrono::high_resolution_clock::time_point end_time_;
 };
 
 // ----------------------------------------------

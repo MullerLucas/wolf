@@ -25,7 +25,6 @@ int main() {
         auto input = reader->readln_all();
         assert(!input.empty());
 
-
         std::unique_ptr<Filter> filter = std::make_unique<LockFreeListFilter>(&input, 1);
         filter->filter("BB");
         filter->filter("C");

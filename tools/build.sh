@@ -2,12 +2,11 @@
 
 IS_DEBUG_BUILD=true
 SRC=src/main.cpp
+POSITIONAL_ARGS=()
 
 # -----------------------------------------------
 
 # parse command line arguments
-POSITIONAL_ARGS=()
-
 while [[ $# -gt 0 ]]; do
   case $1 in
     -r|--release)
@@ -31,13 +30,17 @@ if [ "$IS_DEBUG_BUILD" = true ]; then
     OPTIMIZATION="-Og"
     DEBUG_SYMBOLS="-g"
     SANITIZERS="-fsanitize=undefined,thread"
+
     echo "creating debug build"
 else
-    echo "creating release build"
     TARGET_DIR=target/release
     OPTIMIZATION="-O2"
     SANITIZERS=""
+
+    echo "creating release build"
 fi
+
+# -----------------------------------------------
 
 # ensure target directory exists
 mkdir -p $TARGET_DIR
@@ -54,3 +57,4 @@ clang++ \
     || exit 1
 
 echo "build complete"
+echo "--------------"

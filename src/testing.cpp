@@ -12,6 +12,7 @@ std::vector<std::string> generate_test_data(usize width, b32 shuffle) {
     assert(width <= 26);
 
     u32 total_combinations = static_cast<int>(std::pow(26, width));
+
     std::vector<std::string> test_data;
     test_data.reserve(total_combinations);
 

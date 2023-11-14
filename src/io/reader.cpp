@@ -21,21 +21,21 @@ std::vector<std::string> ConsoleReader::readln_all() {
 
 // ----------------------------------------------
 
-FileReader::FileReader(std::string file_name) : filename(file_name) {
-    file_stream.open(filename);
-    assert(file_stream.is_open());
+FileReader::FileReader(std::string file_name) : filename_(file_name) {
+    file_stream_.open(filename_);
+    assert(file_stream_.is_open());
 }
 
 FileReader::~FileReader() {
-    file_stream.close();
-    assert(!file_stream.is_open());
+    file_stream_.close();
+    assert(!file_stream_.is_open());
 }
 
 std::vector<std::string> FileReader::readln_all() {
     std::vector<std::string> input;
-
     std::string line;
-    while (std::getline(file_stream, line)) {
+
+    while (std::getline(file_stream_, line)) {
         input.push_back(std::move(line));
     }
 

@@ -11,10 +11,11 @@ namespace wolf {
 
 class Writer {
 public:
+    virtual ~Writer() = default;
+
     virtual void writeln(const std::string& data) = 0;
     virtual void writeln_all(const std::vector<std::string>& data);
     virtual void writeln_all(const std::vector<const std::string*>& data);
-    virtual ~Writer() = default;
 };
 
 // ----------------------------------------------
@@ -28,13 +29,14 @@ public:
 
 class FileWriter : public Writer {
 public:
-    FileWriter(std::string file_name);
-    void writeln(const std::string& data) override;
     ~FileWriter() override;
 
+    FileWriter(std::string file_name);
+    void writeln(const std::string& data) override;
+
 private:
-    std::string filename;
-    std::ofstream file_stream;
+    std::string   filename_;
+    std::ofstream file_stream_;
 };
 
 // ----------------------------------------------
