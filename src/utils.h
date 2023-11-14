@@ -22,17 +22,12 @@ typedef size_t usize;
 
 typedef int32_t b32;
 
-// ----------------------------------------------
-
 namespace wolf {
 
-void log_info(const char* format, ...);
-
-
 // ----------------------------------------------
 
-std::vector<std::string> read_stdin();
-
+void log_info(const char* format, ...);
+b32 string_starts_with(const std::string& str, const std::string& prefix, usize offset);
 
 // ----------------------------------------------
 

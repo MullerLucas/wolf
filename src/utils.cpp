@@ -20,6 +20,20 @@ void log_info(const char* format, ...) {
     va_end(args);
 }
 
+b32 string_starts_with(const std::string& str, const std::string& prefix, usize offset) {
+    if (prefix.size() > str.size()) {
+        return false;
+    }
+
+    for (usize i = offset; i < prefix.size(); i++) {
+        if (str[i] != prefix[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // ----------------------------------------------
 
 Timer::Timer() : start_time(std::chrono::high_resolution_clock::now()), end_time(start_time)

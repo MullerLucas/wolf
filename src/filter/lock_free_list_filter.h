@@ -14,18 +14,22 @@ class LockFreeListFilter : public Filter {
 public:
     LockFreeListFilter(const Input* input, usize num_threads);
 
-    const Output& filter(const std::string& pattern) override;
+    void reset() override;
+    void filter(const std::string& pattern) override;
+    const Output& create_output() const override;
 
 private:
     const Input* input;
     Output output;
+    std::string pattern_;
     usize num_threads;
 
     static void process_workload(
         Output& output,
-        const std::string& pattern,
         usize start,
-        usize end
+        usize end,
+        const std::string& pattern,
+        usize offset
     );
 };
 

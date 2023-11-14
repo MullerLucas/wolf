@@ -6,15 +6,19 @@
 #include <vector>
 
 #include "../utils.h"
-#include "simple_filter.h"
+#include "lock_free_list_filter.h"
 
 namespace wolf {
 
 // ----------------------------------------------
 
 LockFreeListFilter::LockFreeListFilter(const Input* input, usize num_threads)
-    : input(input), num_threads(num_threads)
+    : input(input), pattern_(""), num_threads(num_threads)
 {
+    reset();
+}
+
+void LockFreeListFilter::reset() {
     assert(this->input != nullptr);
 
     output.clear();
@@ -23,13 +27,19 @@ LockFreeListFilter::LockFreeListFilter(const Input* input, usize num_threads)
     for (const auto& in : *input) {
         output.push_back(&in);
     }
+
+    pattern_.clear();
 }
 
-const LockFreeListFilter::Output& LockFreeListFilter::filter(const std::string& pattern) {
-    const usize size = input->size();
+void LockFreeListFilter::filter(const std::string& pattern) {
+    const usize size = output.size();
     usize chunck_size = size / num_threads;
 
-    log_info("Parallel filter with %d threads and chucks of size %i\n", num_threads, chunck_size);
+    const usize offset = pattern_.size();
+    pattern_ += pattern;
+
+    log_info("Parallel filter with %d threads and chucks of size %i - offset is %i\n",
+             num_threads, chunck_size, offset);
 
     std::vector<std::thread> threads;
     threads.reserve(num_threads);
@@ -41,9 +51,10 @@ const LockFreeListFilter::Output& LockFreeListFilter::filter(const std::string& 
         threads.emplace_back(
             LockFreeListFilter::process_workload,
             std::ref(output),
-            std::ref(pattern),
             start,
-            end
+            end,
+            std::ref(pattern_),
+            offset
         );
     }
 
@@ -55,13 +66,21 @@ const LockFreeListFilter::Output& LockFreeListFilter::filter(const std::string& 
         return str == nullptr;
     });
     output.erase(it, output.end());
+}
 
+const LockFreeListFilter::Output& LockFreeListFilter::create_output() const {
     return output;
 }
 
-void LockFreeListFilter::process_workload(Output& output, const std::string& pattern, usize start, usize end) {
+void LockFreeListFilter::process_workload(
+    Output& output,
+    usize start,
+    usize end,
+    const std::string& pattern,
+    usize offset
+) {
     for (usize i = start; i < end; i++) {
-        if (output[i]->find(pattern) != 0) {
+        if (!string_starts_with(*output[i], pattern, offset)) {
             output[i] = nullptr;
         }
     }
