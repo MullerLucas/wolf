@@ -8,6 +8,7 @@
 #include "bench.h"
 #include "filter/lock_free_list_filter.h"
 #include "filter/trie_filter.h"
+#include "utils.h"
 
 namespace wolf {
 
@@ -39,16 +40,25 @@ void Bench::run() const {
     writer_ << "\n\n";
 
 
+    log_info("Running Vector-Filter benchmarks\n");
+    writer_ << "Vector Filter:\n";
     run_any(run_vector_filter);
-    writer_ << "\n";
+
+    log_info("Running Trie-Filter benchmarks\n");
+    writer_ << "\nTrie Filter:\n";
     run_any(run_trie_filter);
 }
 
 void Bench::run_any(
     std::function<BenchResult(const std::vector<std::string>& input, const std::string& prefix, usize num_threads)> fn
 ) const {
+    usize remaining = prefixes_.size() * num_threads_.size();
+
+    writer_.set_width(8);
     for (const auto& p : prefixes_) {
         for (auto nt : num_threads_) {
+            log_info("%i sets remaining\n", remaining--);
+
             i64 best_construction_time = std::numeric_limits<i64>::max();
             i64 best_setup_time        = std::numeric_limits<i64>::max();
             i64 best_filter_time       = std::numeric_limits<i64>::max();
@@ -62,7 +72,6 @@ void Bench::run_any(
 
             i64 best_total_time = best_construction_time + best_setup_time + best_filter_time;
 
-            writer_.set_width(8);
             writer_
             << "P: "   << p
             << " T: "   << nt
@@ -71,10 +80,9 @@ void Bench::run_any(
             << " S: "   << best_setup_time
             << " F: "   << best_filter_time
             << "\n";
-            writer_.set_width(0);
         }
     }
-
+    writer_.set_width(0);
 }
 
 BenchResult Bench::run_vector_filter(
@@ -86,7 +94,7 @@ BenchResult Bench::run_vector_filter(
     Timer t;
 
     t.restart();
-    auto filter = std::make_unique<LockFreeListFilter>(&input, num_threads);
+    LockFreeListFilter filter(&input, num_threads);
     t.stop();
     result.construction_time = t.elapsed_us().count();
 
@@ -94,7 +102,7 @@ BenchResult Bench::run_vector_filter(
     result.setup_time = 0;
 
     t.restart();
-    filter->filter(prefix);
+    filter.filter(prefix);
     t.stop();
     result.filter_time = t.elapsed_us().count();
 
@@ -104,13 +112,13 @@ BenchResult Bench::run_vector_filter(
 BenchResult Bench::run_trie_filter(
     const std::vector<std::string>& input,
     const std::string& prefix,
-    usize num_threads
+    usize num_threads __attribute__((unused))
 ) {
     BenchResult result;
     Timer t;
 
     t.restart();
-    auto filter = std::make_unique<TrieFilter>(&input);
+    TrieFilter filter(&input);
     t.stop();
     result.construction_time = t.elapsed_us().count();
 
@@ -118,7 +126,7 @@ BenchResult Bench::run_trie_filter(
     result.setup_time = 0;
 
     t.restart();
-    filter->filter(prefix);
+    filter.filter(prefix);
     t.stop();
     result.filter_time = t.elapsed_us().count();
 

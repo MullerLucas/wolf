@@ -1,0 +1,64 @@
+Benchmark (2023-11-15 19:53:24)
+Input:      456976 words
+Iterations: 50
+Threads:    1 2 4 8 16 32 64 
+
+Vector Filter:
+     P:        A     T:        1   SUM:      944     C:      169     S:        0     F:      775       
+     P:        A     T:        2   SUM:     1024     C:      514     S:        0     F:      510       
+     P:        A     T:        4   SUM:      931     C:      529     S:        0     F:      402       
+     P:        A     T:        8   SUM:      839     C:      437     S:        0     F:      402       
+     P:        A     T:       16   SUM:     1150     C:      534     S:        0     F:      616       
+     P:        A     T:       32   SUM:     1482     C:      563     S:        0     F:      919       
+     P:        A     T:       64   SUM:     2066     C:      521     S:        0     F:     1545       
+     P:       BC     T:        1   SUM:      765     C:      168     S:        0     F:      597       
+     P:       BC     T:        2   SUM:      926     C:      544     S:        0     F:      382       
+     P:       BC     T:        4   SUM:      836     C:      556     S:        0     F:      280       
+     P:       BC     T:        8   SUM:      737     C:      465     S:        0     F:      272       
+     P:       BC     T:       16   SUM:     1049     C:      565     S:        0     F:      484       
+     P:       BC     T:       32   SUM:     1440     C:      588     S:        0     F:      852       
+     P:       BC     T:       64   SUM:     1922     C:      477     S:        0     F:     1445       
+     P:      CAB     T:        1   SUM:      735     C:      168     S:        0     F:      567       
+     P:      CAB     T:        2   SUM:      924     C:      546     S:        0     F:      378       
+     P:      CAB     T:        4   SUM:      831     C:      557     S:        0     F:      274       
+     P:      CAB     T:        8   SUM:      846     C:      560     S:        0     F:      286       
+     P:      CAB     T:       16   SUM:      870     C:      419     S:        0     F:      451       
+     P:      CAB     T:       32   SUM:     1356     C:      580     S:        0     F:      776       
+     P:      CAB     T:       64   SUM:     1959     C:      537     S:        0     F:     1422       
+     P:     ABCD     T:        1   SUM:     1215     C:      580     S:        0     F:      635       
+     P:     ABCD     T:        2   SUM:      917     C:      546     S:        0     F:      371       
+     P:     ABCD     T:        4   SUM:      834     C:      558     S:        0     F:      276       
+     P:     ABCD     T:        8   SUM:      758     C:      471     S:        0     F:      287       
+     P:     ABCD     T:       16   SUM:     1047     C:      568     S:        0     F:      479       
+     P:     ABCD     T:       32   SUM:     1348     C:      572     S:        0     F:      776       
+     P:     ABCD     T:       64   SUM:     1959     C:      527     S:        0     F:     1432       
+
+Trie Filter:
+     P:        A     T:        1   SUM:    54229     C:    53216     S:        0     F:     1013       
+     P:        A     T:        2   SUM:    55398     C:    53523     S:        0     F:     1875       
+     P:        A     T:        4   SUM:    54832     C:    53127     S:        0     F:     1705       
+     P:        A     T:        8   SUM:    55027     C:    53118     S:        0     F:     1909       
+     P:        A     T:       16   SUM:    54824     C:    52915     S:        0     F:     1909       
+     P:        A     T:       32   SUM:    55571     C:    53665     S:        0     F:     1906       
+     P:        A     T:       64   SUM:    54962     C:    53188     S:        0     F:     1774       
+     P:       BC     T:        1   SUM:    54367     C:    53459     S:        0     F:      908       
+     P:       BC     T:        2   SUM:    54462     C:    53513     S:        0     F:      949       
+     P:       BC     T:        4   SUM:    54385     C:    53431     S:        0     F:      954       
+     P:       BC     T:        8   SUM:    54636     C:    53687     S:        0     F:      949       
+     P:       BC     T:       16   SUM:    54404     C:    53452     S:        0     F:      952       
+     P:       BC     T:       32   SUM:    54115     C:    53165     S:        0     F:      950       
+     P:       BC     T:       64   SUM:    53951     C:    53007     S:        0     F:      944       
+     P:      CAB     T:        1   SUM:    54087     C:    54086     S:        0     F:        1       
+     P:      CAB     T:        2   SUM:   106361     C:   106360     S:        0     F:        1       
+     P:      CAB     T:        4   SUM:   106790     C:   106789     S:        0     F:        1       
+     P:      CAB     T:        8   SUM:   105685     C:   105684     S:        0     F:        1       
+     P:      CAB     T:       16   SUM:   108227     C:   108226     S:        0     F:        1       
+     P:      CAB     T:       32   SUM:   107364     C:   107363     S:        0     F:        1       
+     P:      CAB     T:       64   SUM:   105639     C:   105638     S:        0     F:        1       
+     P:     ABCD     T:        1   SUM:   107403     C:   107403     S:        0     F:        0       
+     P:     ABCD     T:        2   SUM:   105724     C:   105724     S:        0     F:        0       
+     P:     ABCD     T:        4   SUM:   106785     C:   106785     S:        0     F:        0       
+     P:     ABCD     T:        8   SUM:   105807     C:   105807     S:        0     F:        0       
+     P:     ABCD     T:       16   SUM:   105504     C:   105504     S:        0     F:        0       
+     P:     ABCD     T:       32   SUM:   107265     C:   107265     S:        0     F:        0       
+     P:     ABCD     T:       64   SUM:   108753     C:   108753     S:        0     F:        0       

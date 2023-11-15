@@ -39,7 +39,7 @@ void run_filter_words(Config& config) {
     writer->write_lines(filter->create_output());
 }
 
-void run_benchmark(Config& config) {
+void run_benchmark() {
     std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_1.txt");
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
 
@@ -51,7 +51,7 @@ void run_benchmark(Config& config) {
         input,
         { "A", "BC", "CAB", "ABCD" },
         { 1, 2, 4, 8, 16, 32, 64 },
-        20
+        50
     );
     bench.run();
 }
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
             run_generate_test_data(config);
             break;
         case OperationType::Benchmark:
-            run_benchmark(config);
+            run_benchmark();
             break;
         case OperationType::Help:
             run_help();

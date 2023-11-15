@@ -34,7 +34,7 @@ if [ "$IS_DEBUG_BUILD" = true ]; then
     echo "creating debug build"
 else
     TARGET_DIR=target/release
-    OPTIMIZATION="-O2"
+    OPTIMIZATION="-O3"
     SANITIZERS=""
 
     echo "creating release build"
