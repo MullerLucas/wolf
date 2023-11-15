@@ -10,6 +10,7 @@
 #include "testing.h"
 #include "utils.h"
 #include "filter/trie_filter.h"
+#include "bench.h"
 
 #include "app.cpp"
 #include "config.cpp"
@@ -19,6 +20,7 @@
 #include "testing.cpp"
 #include "utils.cpp"
 #include "filter/trie_filter.cpp"
+#include "bench.cpp"
 
 using namespace wolf;
 
@@ -35,6 +37,17 @@ void run_filter_words(Config& config) {
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
     writer->writeln_all(filter->create_output());
+}
+
+void run_benchmark(Config& config) {
+    std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_0.txt");
+    std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
+
+    auto input = reader->readln_all();
+    assert(!input.empty());
+
+    Bench bench(*writer, input, {1, 2, 4, 8, 16, 32, 64}, 5);
+    bench.run();
 }
 
 void run_generate_test_data(Config& config) {
@@ -74,6 +87,8 @@ int main(int argc, char** argv) {
             run_help();
             break;
     }
+
+    run_benchmark(config);
 
     return 0;
 }

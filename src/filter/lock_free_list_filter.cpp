@@ -38,9 +38,6 @@ void LockFreeListFilter::filter(const std::string& pattern) {
     const usize offset = pattern_.size();
     pattern_ += pattern;
 
-    log_info("Parallel filter with %d threads and chucks of size %i - offset is %i\n",
-             num_threads_, chunck_size, offset);
-
     std::vector<std::thread> threads;
     threads.reserve(num_threads_);
 
