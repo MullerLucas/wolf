@@ -8,7 +8,7 @@ namespace wolf {
 
 // ----------------------------------------------
 
-std::vector<std::string> ConsoleReader::readln_all() {
+std::vector<std::string> ConsoleReader::read_lines() {
     std::string tmp;
     std::vector<std::string> input;
 
@@ -31,7 +31,7 @@ FileReader::~FileReader() {
     assert(!file_stream_.is_open());
 }
 
-std::vector<std::string> FileReader::readln_all() {
+std::vector<std::string> FileReader::read_lines() {
     std::vector<std::string> input;
     std::string line;
 

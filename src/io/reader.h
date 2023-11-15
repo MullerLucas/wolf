@@ -11,7 +11,7 @@ namespace wolf {
 
 class Reader {
 public:
-    virtual std::vector<std::string> readln_all() = 0;
+    virtual std::vector<std::string> read_lines() = 0;
     virtual ~Reader() = default;
 };
 
@@ -19,7 +19,7 @@ public:
 
 class ConsoleReader: public Reader {
 public:
-    std::vector<std::string> readln_all();
+    std::vector<std::string> read_lines();
 };
 
 // ----------------------------------------------
@@ -29,7 +29,7 @@ public:
     FileReader(std::string file_name);
     ~FileReader() override;
 
-    std::vector<std::string> readln_all() override;
+    std::vector<std::string> read_lines() override;
 
 private:
     std::string filename_;

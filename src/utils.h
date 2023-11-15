@@ -31,9 +31,6 @@ namespace wolf {
 // ----------------------------------------------
 
 void log_info(const char* format, ...);
-
-// ----------------------------------------------
-
 b8 string_starts_with(const std::string& str, const std::string& prefix, usize offset);
 
 // ----------------------------------------------

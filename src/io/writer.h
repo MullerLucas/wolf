@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 
+#include "../utils.h"
+
 
 namespace wolf {
 
@@ -13,26 +15,38 @@ class Writer {
 public:
     virtual ~Writer() = default;
 
-    virtual void writeln(const std::string& data) = 0;
-    virtual void writeln_all(const std::vector<std::string>& data);
-    virtual void writeln_all(const std::vector<const std::string*>& data);
+    virtual Writer& operator<<(const std::string& message) = 0;
+    virtual Writer& operator<<(i64 number) = 0;
+    virtual Writer& operator<<(std::ostream& (*manipulator)(std::ostream&)) = 0;
+
+    virtual void write_lines(const std::vector<std::string>& data);
+    virtual void write_lines(const std::vector<const std::string*>& data);
+
+    Writer& set_width(usize width);
+
+protected:
+    usize width_ = 0;
 };
 
 // ----------------------------------------------
 
 class ConsoleWriter : public Writer {
 public:
-    void writeln(const std::string& data) override;
+    Writer& operator<<(const std::string& message) override;
+    Writer& operator<<(i64 number) override;
+    Writer& operator<<(std::ostream& (*manipulator)(std::ostream&)) override;
 };
 
 // ----------------------------------------------
 
 class FileWriter : public Writer {
 public:
+    FileWriter(std::string file_name);
     ~FileWriter() override;
 
-    FileWriter(std::string file_name);
-    void writeln(const std::string& data) override;
+    Writer& operator<<(const std::string& message) override;
+    Writer& operator<<(i64 number) override;
+    Writer& operator<<(std::ostream& (*manipulator)(std::ostream&)) override;
 
 private:
     std::string   filename_;

@@ -13,7 +13,7 @@ namespace wolf {
 // ----------------------------------------------
 
 LockFreeListFilter::LockFreeListFilter(const Input* input, usize num_threads)
-    : input_(input), pattern_(""), num_threads_(num_threads)
+    : input_(input), prefix_(""), num_threads_(num_threads)
 {
     reset();
 }
@@ -28,15 +28,15 @@ void LockFreeListFilter::reset() {
         output_.push_back(&in);
     }
 
-    pattern_.clear();
+    prefix_.clear();
 }
 
-void LockFreeListFilter::filter(const std::string& pattern) {
+void LockFreeListFilter::filter(const std::string& prefix) {
     const usize size        = output_.size();
     const usize chunck_size = size / num_threads_;
 
-    const usize offset = pattern_.size();
-    pattern_ += pattern;
+    const usize offset = prefix_.size();
+    prefix_ += prefix;
 
     std::vector<std::thread> threads;
     threads.reserve(num_threads_);
@@ -50,7 +50,7 @@ void LockFreeListFilter::filter(const std::string& pattern) {
             std::ref(output_),
             start,
             end,
-            std::ref(pattern_),
+            std::ref(prefix_),
             offset
         );
     }
@@ -73,11 +73,11 @@ void LockFreeListFilter::process_workload(
     Output& output,
     usize start,
     usize end,
-    const std::string& pattern,
+    const std::string& prefix,
     usize offset
 ) {
     for (usize i = start; i < end; i++) {
-        if (!string_starts_with(*output[i], pattern, offset)) {
+        if (!string_starts_with(*output[i], prefix, offset)) {
             output[i] = nullptr;
         }
     }

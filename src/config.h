@@ -11,6 +11,7 @@ namespace wolf {
 enum class OperationType {
     FilterWords,
     GenerateTestData,
+    Benchmark,
     Help,
 };
 
@@ -22,7 +23,7 @@ struct Config {
     std::optional<std::string> input_file;
     std::optional<std::string> output_file;
 
-    std::string pattern;
+    std::string prefix;
 
     usize num_threads;
     usize width;
@@ -35,8 +36,9 @@ const Config DEFAULT_CONFIG = {
     .operation_type = OperationType::FilterWords,
     .input_file     = std::nullopt,
     .output_file    = std::nullopt,
-    .pattern        = "",
+    .prefix         = "",
     .num_threads    = std::thread::hardware_concurrency(),
+    .width          = 4,
     .is_incremental = false,
     .should_shuffle = false,
     .is_verbose     = false,

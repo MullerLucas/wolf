@@ -16,8 +16,8 @@ public:
 
     virtual ~Filter() = default;
 
-    virtual void filter(const std::string& pattern) = 0;
-    virtual const Output& create_output() const     = 0;
+    virtual void filter(const std::string& prefix) = 0;
+    virtual const Output& create_output() const    = 0;
 };
 
 // ----------------------------------------------
