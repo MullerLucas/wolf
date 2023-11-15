@@ -14,9 +14,10 @@ class LockFreeListFilter : public Filter {
 public:
     LockFreeListFilter(const Input* input, usize num_threads);
 
-    void reset()                            override;
     void filter(const std::string& pattern) override;
     const Output& create_output() const     override;
+
+    void reset();
 
 private:
     const Input* input_;

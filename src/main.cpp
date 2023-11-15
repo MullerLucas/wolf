@@ -1,4 +1,5 @@
 #include <cassert>
+#include <memory>
 
 #include "app.h"
 #include "config.h"
@@ -8,6 +9,7 @@
 #include "io/writer.h"
 #include "testing.h"
 #include "utils.h"
+#include "filter/trie_filter.h"
 
 #include "app.cpp"
 #include "config.cpp"
@@ -16,6 +18,7 @@
 #include "io/writer.cpp"
 #include "testing.cpp"
 #include "utils.cpp"
+#include "filter/trie_filter.cpp"
 
 using namespace wolf;
 
@@ -24,7 +27,10 @@ void run_filter_words(Config& config) {
     auto input = reader->readln_all();
     assert(!input.empty());
 
-    std::unique_ptr<Filter> filter = std::make_unique<LockFreeListFilter>(&input, config.num_threads);
+    // std::unique_ptr<Filter> filter = std::make_unique<LockFreeListFilter>(&input, config.num_threads);
+    // filter->filter(config.pattern);
+
+    std::unique_ptr<TrieFilter> filter = std::make_unique<TrieFilter>(&input);
     filter->filter(config.pattern);
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
