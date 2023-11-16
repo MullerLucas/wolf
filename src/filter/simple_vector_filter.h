@@ -10,9 +10,9 @@ namespace wolf {
 
 // ----------------------------------------------
 
-class LockFreeListFilter : public Filter {
+class SimpleVectorFilter : public Filter {
 public:
-    LockFreeListFilter(const Input* input, usize num_threads);
+    SimpleVectorFilter(const Input* input, usize num_threads);
 
     void filter(const std::string& prefix) override;
     const Output& create_output() const    override;

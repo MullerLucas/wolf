@@ -6,19 +6,19 @@
 #include <vector>
 
 #include "../utils.h"
-#include "lock_free_list_filter.h"
+#include "simple_vector_filter.h"
 
 namespace wolf {
 
 // ----------------------------------------------
 
-LockFreeListFilter::LockFreeListFilter(const Input* input, usize num_threads)
+SimpleVectorFilter::SimpleVectorFilter(const Input* input, usize num_threads)
     : input_(input), prefix_(""), num_threads_(num_threads)
 {
     reset();
 }
 
-void LockFreeListFilter::reset() {
+void SimpleVectorFilter::reset() {
     assert(this->input_ != nullptr);
 
     output_.clear();
@@ -31,7 +31,7 @@ void LockFreeListFilter::reset() {
     prefix_.clear();
 }
 
-void LockFreeListFilter::filter(const std::string& prefix) {
+void SimpleVectorFilter::filter(const std::string& prefix) {
     const usize size        = output_.size();
     const usize chunck_size = size / num_threads_;
 
@@ -46,7 +46,7 @@ void LockFreeListFilter::filter(const std::string& prefix) {
         usize end   = (i == num_threads_ - 1) ? size : (i + 1) * chunck_size;
 
         threads.emplace_back(
-            LockFreeListFilter::process_workload,
+            SimpleVectorFilter::process_workload,
             std::ref(output_),
             start,
             end,
@@ -65,11 +65,11 @@ void LockFreeListFilter::filter(const std::string& prefix) {
     output_.erase(it, output_.end());
 }
 
-const LockFreeListFilter::Output& LockFreeListFilter::create_output() const {
+const SimpleVectorFilter::Output& SimpleVectorFilter::create_output() const {
     return output_;
 }
 
-void LockFreeListFilter::process_workload(
+void SimpleVectorFilter::process_workload(
     Output& output,
     usize start,
     usize end,
