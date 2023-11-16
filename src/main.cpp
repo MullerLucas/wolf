@@ -4,23 +4,25 @@
 #include "app.h"
 #include "config.h"
 #include "filter/filter.h"
-#include "filter/lock_free_list_filter.h"
+#include "filter/simple_vector_filter.h"
 #include "io/reader.h"
 #include "io/writer.h"
 #include "testing.h"
 #include "utils.h"
 #include "filter/trie_filter.h"
 #include "bench.h"
+#include "thread_pool.h"
 
 #include "app.cpp"
 #include "config.cpp"
-#include "filter/lock_free_list_filter.cpp"
+#include "filter/simple_vector_filter.cpp"
 #include "io/reader.cpp"
 #include "io/writer.cpp"
 #include "testing.cpp"
 #include "utils.cpp"
 #include "filter/trie_filter.cpp"
 #include "bench.cpp"
+#include "thread_pool.cpp"
 
 using namespace wolf;
 
@@ -29,18 +31,19 @@ void run_filter_words(Config& config) {
     auto input = reader->read_lines();
     assert(!input.empty());
 
-    // std::unique_ptr<Filter> filter = std::make_unique<LockFreeListFilter>(&input, config.num_threads);
-    // filter->filter(config.pattern);
-
-    std::unique_ptr<TrieFilter> filter = std::make_unique<TrieFilter>(&input);
+    std::unique_ptr<SimpleVectorFilter> filter = std::make_unique<SimpleVectorFilter>(config.num_threads);
+    filter->init_data(&input);
     filter->filter(config.prefix);
+
+    // std::unique_ptr<TrieFilter> filter = std::make_unique<TrieFilter>(&input);
+    // filter->filter(config.prefix);
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
     writer->write_lines(filter->create_output());
 }
 
 void run_benchmark() {
-    std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_1.txt");
+    std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w5_1.txt");
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
 
     auto input = reader->read_lines();
@@ -50,8 +53,8 @@ void run_benchmark() {
         *writer,
         input,
         { "A", "BC", "CAB", "ABCD" },
-        { 1, 2, 4, 8, 16, 32, 64 },
-        50
+        { 1, 2, 4, 8, 12, 16, 32 },
+        10
     );
     bench.run();
 }

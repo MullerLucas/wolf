@@ -11,13 +11,13 @@ namespace wolf {
 
 class Filter {
 public:
-    using Input  = std::vector<std::string>;
-    using Output = std::vector<const std::string*>;
+    using InVec  = std::vector<std::string>;
+    using OutVec = std::vector<const std::string*>;
 
-    virtual ~Filter() = default;
-
-    virtual void filter(const std::string& prefix) = 0;
-    virtual const Output& create_output() const    = 0;
+    // virtual ~Filter() = default;
+    //
+    // virtual void filter(const std::string& prefix) = 0;
+    // virtual const std::vector<const std::string*>& create_output() const    = 0;
 };
 
 // ----------------------------------------------

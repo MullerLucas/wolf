@@ -4,9 +4,10 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <pstl/glue_execution_defs.h>
 
 #include "bench.h"
-#include "filter/lock_free_list_filter.h"
+#include "filter/simple_vector_filter.h"
 #include "filter/trie_filter.h"
 #include "utils.h"
 
@@ -40,13 +41,13 @@ void Bench::run() const {
     writer_ << "\n\n";
 
 
-    log_info("Running Vector-Filter benchmarks\n");
-    writer_ << "Vector Filter:\n";
+    log_info("Running Simple Vector Filter benchmarks\n");
+    writer_ << "Simple Vector Filter:\n";
     run_any(run_vector_filter);
 
-    log_info("Running Trie-Filter benchmarks\n");
-    writer_ << "\nTrie Filter:\n";
-    run_any(run_trie_filter);
+    // log_info("Running Trie-Filter benchmarks\n");
+    // writer_ << "\nTrie Filter:\n";
+    // run_any(run_trie_filter);
 }
 
 void Bench::run_any(
@@ -94,12 +95,16 @@ BenchResult Bench::run_vector_filter(
     Timer t;
 
     t.restart();
-    LockFreeListFilter filter(&input, num_threads);
+    SimpleVectorFilter filter(num_threads);
     t.stop();
     result.construction_time = t.elapsed_us().count();
 
+    t.restart();
+    filter.init_data(&input);
+    t.stop();
+
     // TODO (lm)
-    result.setup_time = 0;
+    result.setup_time = t.elapsed_us().count();
 
     t.restart();
     filter.filter(prefix);

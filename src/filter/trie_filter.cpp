@@ -6,7 +6,7 @@ namespace wolf {
 
 // ----------------------------------------------
 
-TrieFilter::TrieFilter(const Input* input)
+TrieFilter::TrieFilter(const InVec* input)
     : input_(input)
 {
     root_ = new TrieFilterNode();
@@ -58,7 +58,7 @@ const TrieFilterNode* TrieFilter::find(const std::string& prefix) const {
     return curr;
 }
 
-void TrieFilter::collect_words_rec(const TrieFilterNode* node, Output& output) const {
+void TrieFilter::collect_words_rec(const TrieFilterNode* node, OutVec& output) const {
     if (node->word) {
         output.push_back(node->word);
     }
