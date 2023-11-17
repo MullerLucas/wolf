@@ -4,14 +4,13 @@
 #include <vector>
 
 #include "../utils.h"
-#include "filter.h"
 #include "../thread_pool.h"
 
 namespace wolf {
 
 // ----------------------------------------------
 
-class SimpleVectorFilter : public Filter {
+class SimpleVectorFilter {
 public:
     SimpleVectorFilter(usize num_threads);
 
@@ -20,14 +19,15 @@ public:
     const std::vector<const std::string*>& create_output() const;
 
 private:
-    ThreadPool   pool_;
-    const InVec* input_;
-    OutVec       output_;
-    std::string  prefix_;
-    const usize  num_threads_;
+    const std::vector<std::string>* input_;
+    std::vector<const std::string*> output_;
+
+    ThreadPool  pool_;
+    std::string prefix_;
+    const usize num_threads_;
 
     static void process_workload(
-        OutVec& output,
+        std::vector<const std::string*>& output,
         usize   start,
         usize   end,
         const   std::string& prefix,

@@ -1,11 +1,9 @@
 #include <cassert>
 #include <memory>
 
-#include "app.h"
 #include "bench.h"
 #include "collections/word_trie.h"
 #include "config.h"
-#include "filter/filter.h"
 #include "filter/simple_vector_filter.h"
 #include "io/reader.h"
 #include "io/writer.h"
@@ -13,7 +11,6 @@
 #include "thread_pool.h"
 #include "utils.h"
 
-#include "app.cpp"
 #include "bench.cpp"
 #include "collections/word_trie.cpp"
 #include "config.cpp"

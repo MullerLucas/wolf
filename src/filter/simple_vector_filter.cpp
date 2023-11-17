@@ -19,7 +19,7 @@ SimpleVectorFilter::SimpleVectorFilter(usize num_threads)
     pool_.start(num_threads_);
 }
 
-void SimpleVectorFilter::init_data(const InVec* input) {
+void SimpleVectorFilter::init_data(const std::vector<std::string>* input) {
     this->input_ = input;
 
     output_.clear();
@@ -82,12 +82,12 @@ void SimpleVectorFilter::filter(const std::string& prefix) {
     output_.erase(it, output_.end());
 }
 
-const SimpleVectorFilter::OutVec& SimpleVectorFilter::create_output() const {
+const std::vector<const std::string*>& SimpleVectorFilter::create_output() const {
     return output_;
 }
 
 void SimpleVectorFilter::process_workload(
-    OutVec& output,
+    std::vector<const std::string*>& output,
     usize   start,
     usize   end,
     const   std::string& prefix,
