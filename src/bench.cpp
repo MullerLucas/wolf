@@ -8,7 +8,7 @@
 
 #include "bench.h"
 #include "filter/simple_vector_filter.h"
-#include "filter/trie_filter.h"
+#include "filter/simple_trie_filter.h"
 #include "utils.h"
 
 namespace wolf {
@@ -123,7 +123,7 @@ BenchResult Bench::run_trie_filter(
     Timer t;
 
     t.restart();
-    TrieFilter filter(&input);
+    SimpleTrieFilter filter(&input);
     t.stop();
     result.construction_time = t.elapsed_us().count();
 

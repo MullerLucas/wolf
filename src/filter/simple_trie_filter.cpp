@@ -1,12 +1,12 @@
 #include "../utils.h"
-#include "trie_filter.h"
+#include "simple_trie_filter.h"
 #include <functional>
 
 namespace wolf {
 
 // ----------------------------------------------
 
-TrieFilter::TrieFilter(const InVec* input)
+SimpleTrieFilter::SimpleTrieFilter(const InVec* input)
     : input_(input)
 {
     root_ = new TrieFilterNode();
@@ -17,20 +17,20 @@ TrieFilter::TrieFilter(const InVec* input)
     }
 }
 
-TrieFilter::~TrieFilter() {
+SimpleTrieFilter::~SimpleTrieFilter() {
     traverse_nodes_postorder(root_, [](TrieFilterNode* node) {
         delete node;
     });
 }
 
-void TrieFilter::filter(const std::string& prefix) {
+void SimpleTrieFilter::filter(const std::string& prefix) {
     const TrieFilterNode* node = find(prefix);
     if (node) {
         collect_words_rec(node, output_);
     }
 }
 
-bool TrieFilter::insert(const std::string& word) {
+bool SimpleTrieFilter::insert(const std::string& word) {
     TrieFilterNode* curr = root_;
 
     for (char ch : word) {
@@ -45,7 +45,7 @@ bool TrieFilter::insert(const std::string& word) {
     return true;
 }
 
-const TrieFilterNode* TrieFilter::find(const std::string& prefix) const {
+const TrieFilterNode* SimpleTrieFilter::find(const std::string& prefix) const {
     TrieFilterNode* curr = root_;
 
     for (char ch : prefix) {
@@ -58,7 +58,7 @@ const TrieFilterNode* TrieFilter::find(const std::string& prefix) const {
     return curr;
 }
 
-void TrieFilter::collect_words_rec(const TrieFilterNode* node, OutVec& output) const {
+void SimpleTrieFilter::collect_words_rec(const TrieFilterNode* node, OutVec& output) const {
     if (node->word) {
         output.push_back(node->word);
     }
@@ -68,7 +68,7 @@ void TrieFilter::collect_words_rec(const TrieFilterNode* node, OutVec& output) c
     }
 }
 
-void TrieFilter::traverse_nodes_postorder(TrieFilterNode* node, std::function<void(TrieFilterNode*)> cb) {
+void SimpleTrieFilter::traverse_nodes_postorder(TrieFilterNode* node, std::function<void(TrieFilterNode*)> cb) {
     for (const auto& [key, child] : node->children) {
         traverse_nodes_postorder(child, cb);
     }

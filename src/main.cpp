@@ -9,7 +9,7 @@
 #include "io/writer.h"
 #include "testing.h"
 #include "utils.h"
-#include "filter/trie_filter.h"
+#include "filter/simple_trie_filter.h"
 #include "bench.h"
 #include "thread_pool.h"
 
@@ -20,7 +20,7 @@
 #include "io/writer.cpp"
 #include "testing.cpp"
 #include "utils.cpp"
-#include "filter/trie_filter.cpp"
+#include "filter/simple_trie_filter.cpp"
 #include "bench.cpp"
 #include "thread_pool.cpp"
 

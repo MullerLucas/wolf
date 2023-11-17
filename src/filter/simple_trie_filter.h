@@ -18,10 +18,10 @@ struct TrieFilterNode {
 
 // ----------------------------------------------
 
-class TrieFilter : public Filter {
+class SimpleTrieFilter : public Filter {
 public:
-    TrieFilter(const InVec* input);
-    ~TrieFilter();
+    SimpleTrieFilter(const InVec* input);
+    ~SimpleTrieFilter();
 
     void filter(const std::string& prefix);
     const OutVec& create_output() const { return output_; }
