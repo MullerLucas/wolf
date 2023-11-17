@@ -33,6 +33,10 @@ Threads:    1 2 4 8 16 32 64
      P:     ABCD     T:       32   SUM:     1348     C:      572     S:        0     F:      776
      P:     ABCD     T:       64   SUM:     1959     C:      527     S:        0     F:     1432
 
+### Info
+- Threads created in filter
+- Inserted in construct
+
 ### Random Samples
 A, 1: start threads  15 -- join threads 572 -- erase 164
 A, 2: start threads  26 -- join threads 388 -- erase 163

@@ -33,7 +33,7 @@ struct WordTrieMetrics {
 
 // ----------------------------------------------
 
-struct WordTrieState {
+struct WordTrieSession {
     std::vector<const std::string*> filtered_;
 
     std::string   curr_prefix_;
@@ -47,19 +47,19 @@ public:
     WordTrie();
     ~WordTrie();
 
-    WordTrieState initial_state() const;
+    WordTrieSession create_session() const;
 
-    void insert_all(const std::vector<std::string>& words);
+    void insert_all(const std::string* first, const std::string* last);
     bool insert(const std::string& word);
     void clear();
 
-    void filter(WordTrieState state, const std::string& prefix);
+    void filter(WordTrieSession* session, const std::string& prefix);
 
 private:
     WordTrieNode* root_;
 
     const WordTrieNode* find(const std::string& prefix) const;
-    void collect_words_rec(WordTrieState& state, const WordTrieNode* node) const;
+    void collect_words_rec(WordTrieSession* session, const WordTrieNode* node) const;
 
     static void traverse_nodes_postorder(WordTrieNode* node, std::function<void(WordTrieNode*)> cb);
 };

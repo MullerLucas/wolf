@@ -14,6 +14,8 @@ struct BenchResult {
     i64 construction_time;
     i64 setup_time;
     i64 filter_time;
+
+    i64 total_time;
 };
 
 // ----------------------------------------------

@@ -12,22 +12,20 @@ WordTrie::WordTrie() {
 }
 
 WordTrie::~WordTrie() {
-    traverse_nodes_postorder(root_, [](WordTrieNode* node) {
-        delete node;
-    });
+    clear();
 }
 
-WordTrieState WordTrie::initial_state() const {
-    return WordTrieState {
+WordTrieSession WordTrie::create_session() const {
+    return WordTrieSession {
         .filtered_    = {},
         .curr_prefix_ = "",
         .curr_node    = root_
     };
 }
 
-void WordTrie::insert_all(const std::vector<std::string>& words) {
-    for (const auto& w : words) {
-        insert(w);
+void WordTrie::insert_all(const std::string* first, const std::string* last) {
+    for (; first != last; ++first) {
+        (void)insert(*first);
     }
 }
 
@@ -49,13 +47,20 @@ bool WordTrie::insert(const std::string& word) {
     return true;
 }
 
-void WordTrie::filter(WordTrieState state, const std::string& prefix) {
-    const WordTrieNode* node = find(prefix);
-    if (node) {
-        collect_words_rec(state, node);
-    }
+void WordTrie::clear() {
+    traverse_nodes_postorder(root_, [](WordTrieNode* node) {
+        delete node;
+    });
 }
 
+void WordTrie::filter(WordTrieSession* session, const std::string& prefix) {
+    session->curr_prefix_ += prefix;
+
+    const WordTrieNode* node = find(prefix);
+    if (node) {
+        collect_words_rec(session, node);
+    }
+}
 
 const WordTrieNode* WordTrie::find(const std::string& prefix) const {
     WordTrieNode* curr = root_;
@@ -70,13 +75,13 @@ const WordTrieNode* WordTrie::find(const std::string& prefix) const {
     return curr;
 }
 
-void WordTrie::collect_words_rec(WordTrieState& state, const WordTrieNode* node) const {
+void WordTrie::collect_words_rec(WordTrieSession* session, const WordTrieNode* node) const {
     if (node->word) {
-        state.filtered_.push_back(node->word);
+        session->filtered_.push_back(node->word);
     }
 
     for (const auto& [key, child] : node->children) {
-        collect_words_rec(state, child);
+        collect_words_rec(session, child);
     }
 }
 

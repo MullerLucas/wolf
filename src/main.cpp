@@ -4,6 +4,7 @@
 #include "bench.h"
 #include "collections/word_trie.h"
 #include "config.h"
+#include "filter/multi_trie_filter.h"
 #include "filter/simple_vector_filter.h"
 #include "io/reader.h"
 #include "io/writer.h"
@@ -14,11 +15,11 @@
 #include "bench.cpp"
 #include "collections/word_trie.cpp"
 #include "config.cpp"
+#include "filter/multi_trie_filter.cpp"
 #include "filter/simple_vector_filter.cpp"
 #include "io/reader.cpp"
 #include "io/writer.cpp"
 #include "testing.cpp"
-#include "thread_pool.cpp"
 #include "utils.cpp"
 
 using namespace wolf;
@@ -30,16 +31,21 @@ void run_filter_words(Config& config) {
     auto input = reader->read_lines();
     assert(!input.empty());
 
-    std::unique_ptr<SimpleVectorFilter> filter = std::make_unique<SimpleVectorFilter>(config.num_threads);
-    filter->init_data(&input);
-    filter->filter(config.prefix);
+    // std::unique_ptr<SimpleVectorFilter> filter = std::make_unique<SimpleVectorFilter>(config.num_threads);
+    // filter->init_data(&input);
+    // filter->filter(config.prefix);
+
+    auto filter  = std::make_unique<MultiTrieFilter>(1);
+    filter->insert_all(input);
+    auto session = filter->create_session();
+    filter->filter(session, config.prefix);
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
-    writer->write_lines(filter->create_output());
+    writer->write_lines(session.filtered_);
 }
 
 void run_benchmark() {
-    std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w5_1.txt");
+    std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_1.txt");
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
 
     auto input = reader->read_lines();
@@ -50,7 +56,7 @@ void run_benchmark() {
         input,
         { "A", "BC", "CAB", "ABCD" },
         { 1, 2, 4, 8, 12, 16, 32 },
-        10
+        300
     );
     bench.run();
 }

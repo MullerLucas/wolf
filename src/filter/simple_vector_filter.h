@@ -14,17 +14,17 @@ class SimpleVectorFilter {
 public:
     SimpleVectorFilter(usize num_threads);
 
-    void init_data(const std::vector<std::string>* input);
+    void insert_all(const std::vector<std::string>* input);
     void filter(const std::string& prefix);
     const std::vector<const std::string*>& create_output() const;
 
 private:
+    const usize num_threads_;
+    ThreadPool  pool_;
+
     const std::vector<std::string>* input_;
     std::vector<const std::string*> output_;
-
-    ThreadPool  pool_;
-    std::string prefix_;
-    const usize num_threads_;
+    std::string                     prefix_;
 
     static void process_workload(
         std::vector<const std::string*>& output,

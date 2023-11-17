@@ -14,12 +14,10 @@ namespace wolf {
 // ----------------------------------------------
 
 SimpleVectorFilter::SimpleVectorFilter(usize num_threads)
-    : input_(nullptr), prefix_(""), num_threads_(num_threads)
-{
-    pool_.start(num_threads_);
-}
+    : num_threads_(num_threads), pool_(num_threads), input_(nullptr), prefix_("")
+{ }
 
-void SimpleVectorFilter::init_data(const std::vector<std::string>* input) {
+void SimpleVectorFilter::insert_all(const std::vector<std::string>* input) {
     this->input_ = input;
 
     output_.clear();
@@ -37,7 +35,7 @@ const usize WORKLOAD_MULTIPLIER = 3;
 void SimpleVectorFilter::filter(const std::string& prefix) {
     const usize size          = output_.size();
     const usize num_workloads = num_threads_ * WORKLOAD_MULTIPLIER;
-    const usize chunck_size   = size / num_workloads;
+    const usize chunk_size    = size / num_workloads;
 
     const usize offset = prefix_.size();
     prefix_ += prefix;
@@ -45,10 +43,11 @@ void SimpleVectorFilter::filter(const std::string& prefix) {
     std::vector<std::thread> threads;
     threads.reserve(num_threads_);
 
+    std::vector<std::future<void>> futures;
 
     for (usize i = 0; i < num_workloads; i++) {
-        usize start = i * chunck_size;
-        usize end   = (i == num_workloads - 1) ? size : (i + 1) * chunck_size;
+        usize start = i * chunk_size;
+        usize end   = (i == num_workloads - 1) ? size : (i + 1) * chunk_size;
 
         // threads.emplace_back(
         //     SimpleVectorFilter::process_workload,
@@ -59,22 +58,22 @@ void SimpleVectorFilter::filter(const std::string& prefix) {
         //     offset
         // );
 
-        pool_.queue_job([this, start, end, offset] {
-            process_workload(
-                output_,
-                start,
-                end,
-                prefix_,
-                offset
-            );
-        });
+        futures.emplace_back(
+            pool_.enqueue([this, start, end, offset] {
+                process_workload(
+                    output_,
+                    start,
+                    end,
+                    prefix_,
+                    offset
+                );
+            })
+        );
     }
 
-    // for (auto& thread : threads) {
-    //     thread.join();
-    // }
-
-    pool_.stop();
+    for (auto& future : futures) {
+        future.wait();
+    }
 
     auto it = std::remove_if(output_.begin(), output_.end(), [](const std::string* str) {
         return str == nullptr;

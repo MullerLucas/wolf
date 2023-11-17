@@ -1,0 +1,34 @@
+Benchmark (2023-11-17 17:03:06)
+Input:      456976 words
+Iterations: 300
+Threads:    1 2 4 8 12 16 32 
+
+Simple-Vector-Filter:
+     P:        A     T:        1   ALL:      787     C:        9     S:      169     F:      606       
+     P:        A     T:        2   ALL:      974     C:       19     S:      519     F:      431       
+     P:        A     T:        4   ALL:      481     C:       32     S:      169     F:      278       
+     P:        A     T:        8   ALL:      505     C:       86     S:      171     F:      223       
+     P:        A     T:       12   ALL:      578     C:      141     S:      172     F:      213       
+     P:        A     T:       16   ALL:      643     C:      238     S:      172     F:      214       
+     P:        A     T:       32   ALL:      980     C:      520     S:      173     F:      261       
+     P:       BC     T:        1   ALL:      821     C:       10     S:      169     F:      580       
+     P:       BC     T:        2   ALL:      946     C:       19     S:      555     F:      362       
+     P:       BC     T:        4   ALL:      642     C:       35     S:      304     F:      232       
+     P:       BC     T:        8   ALL:      450     C:       89     S:      173     F:      164       
+     P:       BC     T:       12   ALL:      488     C:      145     S:      173     F:      152       
+     P:       BC     T:       16   ALL:      639     C:      238     S:      209     F:      168       
+     P:       BC     T:       32   ALL:     1059     C:      554     S:      231     F:      224       
+     P:      CAB     T:        1   ALL:     1005     C:       10     S:      169     F:      574       
+     P:      CAB     T:        2   ALL:      573     C:       19     S:      170     F:      330       
+     P:      CAB     T:        4   ALL:      635     C:       36     S:      303     F:      227       
+     P:      CAB     T:        8   ALL:      404     C:       77     S:      171     F:      152       
+     P:      CAB     T:       12   ALL:      452     C:      128     S:      171     F:      147       
+     P:      CAB     T:       16   ALL:      631     C:      247     S:      209     F:      154       
+     P:      CAB     T:       32   ALL:      935     C:      538     S:      176     F:      196       
+     P:     ABCD     T:        1   ALL:      815     C:       11     S:      168     F:      536       
+     P:     ABCD     T:        2   ALL:      693     C:       20     S:      170     F:      337       
+     P:     ABCD     T:        4   ALL:      638     C:       37     S:      308     F:      224       
+     P:     ABCD     T:        8   ALL:      506     C:       88     S:      238     F:      157       
+     P:     ABCD     T:       12   ALL:      489     C:      144     S:      177     F:      150       
+     P:     ABCD     T:       16   ALL:      633     C:      243     S:      174     F:      148       
+     P:     ABCD     T:       32   ALL:      913     C:      530     S:      177     F:      198       
