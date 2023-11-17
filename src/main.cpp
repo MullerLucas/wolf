@@ -2,29 +2,31 @@
 #include <memory>
 
 #include "app.h"
+#include "bench.h"
+#include "collections/word_trie.h"
 #include "config.h"
 #include "filter/filter.h"
 #include "filter/simple_vector_filter.h"
 #include "io/reader.h"
 #include "io/writer.h"
 #include "testing.h"
-#include "utils.h"
-#include "filter/simple_trie_filter.h"
-#include "bench.h"
 #include "thread_pool.h"
+#include "utils.h"
 
 #include "app.cpp"
+#include "bench.cpp"
+#include "collections/word_trie.cpp"
 #include "config.cpp"
 #include "filter/simple_vector_filter.cpp"
 #include "io/reader.cpp"
 #include "io/writer.cpp"
 #include "testing.cpp"
-#include "utils.cpp"
-#include "filter/simple_trie_filter.cpp"
-#include "bench.cpp"
 #include "thread_pool.cpp"
+#include "utils.cpp"
 
 using namespace wolf;
+
+// ----------------------------------------------
 
 void run_filter_words(Config& config) {
     std::unique_ptr<Reader> reader = std::make_unique<FileReader>("data/input_w4_0.txt");
@@ -34,9 +36,6 @@ void run_filter_words(Config& config) {
     std::unique_ptr<SimpleVectorFilter> filter = std::make_unique<SimpleVectorFilter>(config.num_threads);
     filter->init_data(&input);
     filter->filter(config.prefix);
-
-    // std::unique_ptr<TrieFilter> filter = std::make_unique<TrieFilter>(&input);
-    // filter->filter(config.prefix);
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
     writer->write_lines(filter->create_output());
@@ -78,6 +77,8 @@ void run_help() {
     std::endl;
 }
 
+// ----------------------------------------------
+
 int main(int argc, char** argv) {
     Config config = config_from_args(argv + 1, argv + argc);
     if (config.is_verbose) {
@@ -101,3 +102,5 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+// ----------------------------------------------

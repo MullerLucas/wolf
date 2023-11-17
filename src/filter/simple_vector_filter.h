@@ -19,7 +19,6 @@ public:
     void filter(const std::string& prefix);
     const std::vector<const std::string*>& create_output() const;
 
-
 private:
     ThreadPool   pool_;
     const InVec* input_;

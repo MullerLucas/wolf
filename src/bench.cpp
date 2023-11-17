@@ -8,7 +8,6 @@
 
 #include "bench.h"
 #include "filter/simple_vector_filter.h"
-#include "filter/simple_trie_filter.h"
 #include "utils.h"
 
 namespace wolf {
@@ -114,28 +113,28 @@ BenchResult Bench::run_vector_filter(
     return result;
 }
 
-BenchResult Bench::run_trie_filter(
-    const std::vector<std::string>& input,
-    const std::string& prefix,
-    usize num_threads __attribute__((unused))
-) {
-    BenchResult result;
-    Timer t;
-
-    t.restart();
-    SimpleTrieFilter filter(&input);
-    t.stop();
-    result.construction_time = t.elapsed_us().count();
-
-    // TODO (lm)
-    result.setup_time = 0;
-
-    t.restart();
-    filter.filter(prefix);
-    t.stop();
-    result.filter_time = t.elapsed_us().count();
-
-    return result;
-}
+// BenchResult Bench::run_trie_filter(
+//     const std::vector<std::string>& input,
+//     const std::string& prefix,
+//     usize num_threads __attribute__((unused))
+// ) {
+//     BenchResult result;
+//     Timer t;
+//
+//     t.restart();
+//     SimpleTrieFilter filter(&input);
+//     t.stop();
+//     result.construction_time = t.elapsed_us().count();
+//
+//     // TODO (lm)
+//     result.setup_time = 0;
+//
+//     t.restart();
+//     filter.filter(prefix);
+//     t.stop();
+//     result.filter_time = t.elapsed_us().count();
+//
+//     return result;
+// }
 
 }
