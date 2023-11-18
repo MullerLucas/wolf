@@ -9,7 +9,9 @@ namespace wolf {
 // ----------------------------------------------
 
 enum class RunMode {
-    FilterWords,
+    Help,
+    FilterOneShot,
+    FilterIncremental,
     GenerateTestData,
     Benchmark,
 };
@@ -17,7 +19,7 @@ enum class RunMode {
 // ----------------------------------------------
 
 struct Config {
-    RunMode run_mode = RunMode::FilterWords;
+    RunMode run_mode = RunMode::Help;
 
     std::optional<std::string> input_file  = std::nullopt;
     std::optional<std::string> output_file = std::nullopt;

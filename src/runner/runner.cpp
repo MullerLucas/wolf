@@ -33,18 +33,21 @@ Runner::~Runner() {
 
 std::unique_ptr<Runner> Runner::create(const Config& config) {
     switch (config.run_mode) {
-        case RunMode::FilterWords:
-            log_info("Using OneShotFilterRunner\n");
+        case RunMode::FilterOneShot:
             return std::make_unique<OneShotFilterRunner>(config);
+        case RunMode::FilterIncremental:
+            // TODO: implement
+            std::runtime_error("Unknown operation type");
         case RunMode::GenerateTestData:
-            log_info("Using GeneratorRunner\n");
             return std::make_unique<GeneratorRunner>(config);
         case RunMode::Benchmark:
-            log_info("Using BenchRunner\n");
             return std::make_unique<BenchmarkRunner>(config);
+        default:
+            std::runtime_error("Unknown operation type");
+            break;
     }
 
-    std::runtime_error("Unknown operation type");
+    return nullptr;
 }
 
 // ----------------------------------------------

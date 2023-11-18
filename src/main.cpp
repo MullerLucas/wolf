@@ -38,6 +38,11 @@ int main(int argc, char** argv) {
         log_config(config);
     }
 
+    if (config.run_mode == RunMode::Help) {
+        log_help();
+        return 0;
+    }
+
     // run runners
     {
         Timer t;

@@ -30,41 +30,36 @@ Config config_from_args(char** first, char** last) {
     for (; first != last; ++first) {
         // operation-type
         if (compare_options(*first, "-h", "--help")) {
-            log_help();
-            exit(0);
+            config.run_mode = RunMode::Help;
         }
         else if (compare_options(*first, "-m", "--mode")) {
-            first += 1;
             // filter-one-shot
+            ++first;
             if (strcmp(*first, "fos") == 0) {
-                config.run_mode = RunMode::FilterWords;
+                config.run_mode = RunMode::FilterOneShot;
+                config.prefix = *++first;
             }
             // filter-incremental
-            if (strcmp(*first, "fin") == 0) {
-                config.run_mode = RunMode::FilterWords;
+            else if (strcmp(*first, "fin") == 0) {
+                config.run_mode = RunMode::FilterIncremental;
             }
             // generate test data
             else if (strcmp(*first, "gen") == 0) {
                 config.run_mode = RunMode::GenerateTestData;
-                first += 1;
-                config.gen_width = std::stoi(*first);
+                config.gen_width = std::stoi(*++first);
             }
             // benchmark
             else if (strcmp(*first, "bench") == 0) {
                 config.run_mode = RunMode::Benchmark;
 
                 // iterations
-                first += 1;
-                config.bench_iters = std::stoi(*first);
+                config.bench_iters = std::stoi(*++first);
 
-                first += 1;
-                if (strcmp(*first, "true")) {
+                if (strcmp(*++first, "true")) {
                     config.bench_shuffle = true;
                 } else {
                     config.bench_shuffle = false;
                 }
-            } else {
-                std::runtime_error("Unknown operation type");
             }
         }
         // input-file
@@ -84,7 +79,7 @@ Config config_from_args(char** first, char** last) {
             config.is_verbose = true;
         }
         else {
-            config.prefix = *first;
+            std::runtime_error("Unknown option");
         }
     }
 
@@ -107,10 +102,10 @@ void log_config(const Config& config) {
 
 void log_help() {
     std::cout
-    << "Usage: wolf [options] [prefix]\n"
+    << "Usage: wolf [options]\n"
     << "Options:\n"
     << "  -m, --mode         Run Mode\n"
-    << "                     fos:          filter: one-shot\n"
+    << "                     fos <prefix>: filter: one-shot\n"
     << "                     fin:          filter: incremental\n"
     << "                     gen <width>:  generate test data\n"
     << "                     bench <iter>: benchmark\n"
