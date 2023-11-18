@@ -1,14 +1,11 @@
-#include <cassert>
-#include <memory>
-
-#include "bench.h"
+#include "benchmark.h"
 #include "collections/word_trie.h"
 #include "config.h"
 #include "filter/multi_trie_filter.h"
 #include "filter/simple_vector_filter.h"
 #include "io/reader.h"
 #include "io/writer.h"
-#include "runner/bench_runner.h"
+#include "runner/benchmark_runner.h"
 #include "runner/oneshot_filter_runner.h"
 #include "runner/runner.h"
 #include "runner/generator_runner.h"
@@ -16,14 +13,14 @@
 #include "thread_pool.h"
 #include "utils.h"
 
-#include "bench.cpp"
+#include "benchmark.cpp"
 #include "collections/word_trie.cpp"
 #include "config.cpp"
 #include "filter/multi_trie_filter.cpp"
 #include "filter/simple_vector_filter.cpp"
 #include "io/reader.cpp"
 #include "io/writer.cpp"
-#include "runner/bench_runner.cpp"
+#include "runner/benchmark_runner.cpp"
 #include "runner/oneshot_filter_runner.cpp"
 #include "runner/runner.cpp"
 #include "runner/generator_runner.cpp"

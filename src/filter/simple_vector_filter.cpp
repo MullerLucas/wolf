@@ -13,8 +13,8 @@ namespace wolf {
 
 // ----------------------------------------------
 
-SimpleVectorFilter::SimpleVectorFilter(usize num_threads)
-    : num_threads_(num_threads), pool_(num_threads), input_(nullptr), prefix_("")
+SimpleVectorFilter::SimpleVectorFilter(usize thread_count)
+    : thread_count_(thread_count), pool_(thread_count), input_(nullptr), prefix_("")
 { }
 
 void SimpleVectorFilter::insert_all(const std::vector<std::string>* input) {
@@ -34,14 +34,14 @@ const usize WORKLOAD_MULTIPLIER = 3;
 
 void SimpleVectorFilter::filter(const std::string& prefix) {
     const usize size          = output_.size();
-    const usize num_workloads = num_threads_ * WORKLOAD_MULTIPLIER;
+    const usize num_workloads = thread_count_ * WORKLOAD_MULTIPLIER;
     const usize chunk_size    = size / num_workloads;
 
     const usize offset = prefix_.size();
     prefix_ += prefix;
 
     std::vector<std::thread> threads;
-    threads.reserve(num_threads_);
+    threads.reserve(thread_count_);
 
     std::vector<std::future<void>> futures;
 

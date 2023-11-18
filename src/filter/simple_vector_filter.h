@@ -12,14 +12,14 @@ namespace wolf {
 
 class SimpleVectorFilter {
 public:
-    SimpleVectorFilter(usize num_threads);
+    SimpleVectorFilter(usize thread_count);
 
     void insert_all(const std::vector<std::string>* input);
     void filter(const std::string& prefix);
     const std::vector<const std::string*>& create_output() const;
 
 private:
-    const usize num_threads_;
+    const usize thread_count_;
     ThreadPool  pool_;
 
     const std::vector<std::string>* input_;

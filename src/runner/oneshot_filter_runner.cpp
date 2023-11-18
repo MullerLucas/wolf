@@ -6,7 +6,7 @@ namespace wolf {
 // ----------------------------------------------
 
 OneShotFilterRunner::OneShotFilterRunner(const Config& config)
-    : Runner(config), filter_(config_.num_threads)
+    : Runner(config), filter_(config_.thread_count)
 {
     input_ = reader_->read_lines();
     assert(!input_.empty());

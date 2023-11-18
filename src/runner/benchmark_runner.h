@@ -9,9 +9,9 @@ namespace wolf {
 
 // ----------------------------------------------
 
-class BenchRunner : public Runner {
+class BenchmarkRunner : public Runner {
 public:
-    BenchRunner(const Config& config);
+    BenchmarkRunner(const Config& config);
 
     void setup() override;
     void run() override;

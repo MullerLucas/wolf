@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cwchar>
 #include <cstdarg>
+#include <stdexcept>
 
 namespace wolf {
 
@@ -24,22 +25,47 @@ static bool compare_options(const char* str, const char* option, ...) {
 }
 
 Config config_from_args(char** first, char** last) {
-    Config config = DEFAULT_CONFIG;
+    Config config {};
 
     for (; first != last; ++first) {
         // operation-type
-        if (compare_options(*first, "-f", "--filter")) {
-            config.operation_type = OperationType::FilterWords;
-        }
-        else if (compare_options(*first, "-g", "--generate")) {
-            config.operation_type = OperationType::GenerateTestData;
-        }
-        else if (compare_options(*first, "-b", "--bench")) {
-            config.operation_type = OperationType::Benchmark;
-        }
-        else if (compare_options(*first, "-h", "--help")) {
+        if (compare_options(*first, "-h", "--help")) {
             log_help();
             exit(0);
+        }
+        else if (compare_options(*first, "-m", "--mode")) {
+            first += 1;
+            // filter-one-shot
+            if (strcmp(*first, "fos") == 0) {
+                config.run_mode = RunMode::FilterWords;
+            }
+            // filter-incremental
+            if (strcmp(*first, "fin") == 0) {
+                config.run_mode = RunMode::FilterWords;
+            }
+            // generate test data
+            else if (strcmp(*first, "gen") == 0) {
+                config.run_mode = RunMode::GenerateTestData;
+                first += 1;
+                config.gen_width = std::stoi(*first);
+            }
+            // benchmark
+            else if (strcmp(*first, "bench") == 0) {
+                config.run_mode = RunMode::Benchmark;
+
+                // iterations
+                first += 1;
+                config.bench_iters = std::stoi(*first);
+
+                first += 1;
+                if (strcmp(*first, "true")) {
+                    config.bench_shuffle = true;
+                } else {
+                    config.bench_shuffle = false;
+                }
+            } else {
+                std::runtime_error("Unknown operation type");
+            }
         }
         // input-file
         else if (compare_options(*first, "-i", "--input")) {
@@ -49,25 +75,9 @@ Config config_from_args(char** first, char** last) {
         else if (compare_options(*first, "-o", "--output")) {
             config.output_file = *++first;
         }
-        // prefix
-        else if (compare_options(*first, "-p", "--prefix")) {
-            config.prefix = *++first;
-        }
         // num-threads
         else if (compare_options(*first, "-t", "--threads")) {
-            config.num_threads = std::stoi(*++first);
-        }
-        // width
-        else if (compare_options(*first, "-w", "--width")) {
-            config.width = std::stoi(*++first);
-        }
-        // is-incremental
-        else if (compare_options(*first, "-i", "--incremental")) {
-            config.is_incremental = true;
-        }
-        // should-shuffle
-        else if (compare_options(*first, "-s", "--shuffle")) {
-            config.should_shuffle = true;
+            config.thread_count = std::stoi(*++first);
         }
         // is-verbose
         else if (compare_options(*first, "-v", "--verbose")) {
@@ -83,29 +93,32 @@ Config config_from_args(char** first, char** last) {
 
 void log_config(const Config& config) {
     log_info("Config:\n");
-    log_info("  operation_type: %d\n", config.operation_type);
-    log_info("  input_file: %s\n",     config.input_file.value_or("nullopt").c_str());
-    log_info("  output_file: %s\n",    config.output_file.value_or("nullopt").c_str());
-    log_info("  prefix: %s\n",         config.prefix.c_str());
-    log_info("  num_threads: %zu\n",   config.num_threads);
-    log_info("  width: %zu\n",         config.width);
-    log_info("  is_incremental: %d\n", config.is_incremental);
-    log_info("  should_shuffle: %d\n", config.should_shuffle);
+    log_info("  run_mode:      %d\n",  config.run_mode);
+    log_info("  input_file:    %s\n",  config.input_file.value_or("nullopt").c_str());
+    log_info("  output_file:   %s\n",  config.output_file.value_or("nullopt").c_str());
+    log_info("  prefix:        %s\n",  config.prefix.c_str());
+    log_info("  thread_count:  %zu\n", config.thread_count);
+    log_info("  gen_width:     %zu\n", config.gen_width);
+    log_info("  bench_shuffle: %d\n",  config.bench_shuffle);
+    log_info("  bench_iters:   %zu\n", config.bench_iters);
+    log_info("  is_verbose:    %d\n",  config.is_verbose);
+    log_info("\n");
 }
 
 void log_help() {
     std::cout
     << "Usage: wolf [options] [prefix]\n"
     << "Options:\n"
-    << "  -f, --filter       Filter words\n"
-    << "  -g, --generate     Generate test data\n"
-    << "  -b, --bench        Benchmark\n"
+    << "  -m, --mode         Run Mode\n"
+    << "                     fos:          filter: one-shot\n"
+    << "                     fin:          filter: incremental\n"
+    << "                     gen <width>:  generate test data\n"
+    << "                     bench <iter>: benchmark\n"
     << "  -h, --help         Show help\n"
     << "  -i, --input        Input file\n"
     << "  -o, --output       Output file\n"
     << "  -p, --prefix       Prefix\n"
     << "  -t, --threads      Number of threads\n"
-    << "  -w, --width        Width of test data\n"
     << "  -i, --incremental  Incremental filter\n"
     << "  -s, --shuffle      Shuffle test data\n"
     << "  -v, --verbose      Verbose\n";

@@ -8,7 +8,7 @@ namespace wolf {
 
 // ----------------------------------------------
 
-enum class OperationType {
+enum class RunMode {
     FilterWords,
     GenerateTestData,
     Benchmark,
@@ -17,32 +17,19 @@ enum class OperationType {
 // ----------------------------------------------
 
 struct Config {
-    OperationType operation_type;
+    RunMode run_mode = RunMode::FilterWords;
 
-    std::optional<std::string> input_file;
-    std::optional<std::string> output_file;
+    std::optional<std::string> input_file  = std::nullopt;
+    std::optional<std::string> output_file = std::nullopt;
 
-    std::string prefix;
+    std::string prefix = "";
 
-    usize num_threads;
-    usize width;
-    bool  is_incremental;
-    bool  should_shuffle;
-    bool  is_verbose;
+    usize thread_count  = std::thread::hardware_concurrency();
+    usize gen_width     = 4;
+    bool  bench_shuffle = false;
+    usize bench_iters   = 10;
+    bool  is_verbose    = false;
 };
-
-const Config DEFAULT_CONFIG = {
-    .operation_type = OperationType::FilterWords,
-    .input_file     = std::nullopt,
-    .output_file    = std::nullopt,
-    .prefix         = "",
-    .num_threads    = std::thread::hardware_concurrency(),
-    .width          = 4,
-    .is_incremental = false,
-    .should_shuffle = false,
-    .is_verbose     = false,
-};
-
 
 Config config_from_args(char** first, char** last);
 void   log_config(const Config& config);

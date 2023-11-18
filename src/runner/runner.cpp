@@ -1,7 +1,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "bench_runner.h"
+#include "benchmark_runner.h"
 #include "generator_runner.h"
 #include "oneshot_filter_runner.h"
 #include "runner.h"
@@ -32,13 +32,16 @@ Runner::~Runner() {
 }
 
 std::unique_ptr<Runner> Runner::create(const Config& config) {
-    switch (config.operation_type) {
-        case OperationType::FilterWords:
+    switch (config.run_mode) {
+        case RunMode::FilterWords:
+            log_info("Using OneShotFilterRunner\n");
             return std::make_unique<OneShotFilterRunner>(config);
-        case OperationType::GenerateTestData:
+        case RunMode::GenerateTestData:
+            log_info("Using GeneratorRunner\n");
             return std::make_unique<GeneratorRunner>(config);
-        case OperationType::Benchmark:
-            return std::make_unique<BenchRunner>(config);
+        case RunMode::Benchmark:
+            log_info("Using BenchRunner\n");
+            return std::make_unique<BenchmarkRunner>(config);
     }
 
     std::runtime_error("Unknown operation type");

@@ -3,24 +3,24 @@
 #include <string>
 #include <vector>
 
-#include "bench_runner.h"
-#include "../bench.h"
+#include "benchmark_runner.h"
+#include "../benchmark.h"
 
 namespace wolf {
 
 // ----------------------------------------------
 
-BenchRunner::BenchRunner(const Config& config)
+BenchmarkRunner::BenchmarkRunner(const Config& config)
     : Runner(config)
 {
     input_ = reader_->read_lines();
     assert(!input_.empty());
 }
 
-void BenchRunner::setup() { }
+void BenchmarkRunner::setup() { }
 
-void BenchRunner::run() {
-    Bench bench(
+void BenchmarkRunner::run() {
+    Benchmark bench(
         *writer_,
         input_,
         { "A", "BC", "CAB", "ABCD" },
@@ -28,6 +28,8 @@ void BenchRunner::run() {
         10
     );
     bench.run();
+
+    should_run_ = false;
 }
 
 // ----------------------------------------------

@@ -6,24 +6,25 @@
 #include <memory>
 #include <pstl/glue_execution_defs.h>
 
-#include "bench.h"
+#include "benchmark.h"
 #include "filter/multi_trie_filter.h"
 #include "filter/simple_vector_filter.h"
 #include "utils.h"
 
 namespace wolf {
 
-Bench::Bench(
+Benchmark::Benchmark(
     Writer& writer,
     const std::vector<std::string>& input,
     const std::vector<std::string>& prefixes,
-    std::vector<usize> num_threads,
+    std::vector<usize> thread_count,
     usize iterations
 )
-    : writer_(writer), input_(input), prefixes_(prefixes), num_threads_(num_threads), iterations_(iterations)
+    : writer_(writer), input_(input), prefixes_(prefixes),
+        thread_count_(thread_count), iterations_(iterations)
 {}
 
-void Bench::run() const {
+void Benchmark::run() const {
     char time_buffer[80];
     {
         std::time_t time = std::time(nullptr);
@@ -35,7 +36,7 @@ void Bench::run() const {
     << "Input:      " << input_.size() << " words\n"
     << "Iterations: " << iterations_ << "\n"
     << "Threads:    ";
-    for (const auto& nt : num_threads_) {
+    for (const auto& nt : thread_count_) {
         writer_ << nt << " ";
     }
     writer_ << "\n\n";
@@ -50,14 +51,14 @@ void Bench::run() const {
 
 }
 
-void Bench::run_any(
-    std::function<BenchResult(const std::vector<std::string>& input, const std::string& prefix, usize num_threads)> fn
+void Benchmark::run_any(
+    std::function<BenchResult(const std::vector<std::string>& input, const std::string& prefix, usize thread_count)> fn
 ) const {
-    usize remaining = prefixes_.size() * num_threads_.size();
+    usize remaining = prefixes_.size() * thread_count_.size();
 
     writer_.set_width(8);
     for (const auto& p : prefixes_) {
-        for (auto nt : num_threads_) {
+        for (auto nt : thread_count_) {
             log_info("%i sets remaining\n", remaining--);
 
             i64 best_construct_time = std::numeric_limits<i64>::max();
@@ -93,16 +94,16 @@ void Bench::run_any(
     writer_.set_width(0);
 }
 
-BenchResult Bench::run_vector_filter(
+BenchResult Benchmark::run_vector_filter(
     const std::vector<std::string>& input,
     const std::string& prefix,
-    usize num_threads
+    usize thread_count
 ) {
     BenchResult result;
     Timer t;
 
     t.restart();
-    SimpleVectorFilter filter(num_threads);
+    SimpleVectorFilter filter(thread_count);
     t.stop();
     result.construct_time = t.elapsed_us().count();
 
@@ -129,7 +130,7 @@ BenchResult Bench::run_vector_filter(
     return result;
 }
 
-BenchResult Bench::run_trie_filter(
+BenchResult Benchmark::run_trie_filter(
     const std::vector<std::string>& input,
     const std::string& prefix,
     usize thread_count
