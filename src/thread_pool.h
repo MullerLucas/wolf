@@ -18,6 +18,8 @@ namespace wolf {
 
 class ThreadPool {
 public:
+    using Future = std::future<void>;
+
     explicit ThreadPool(usize thread_count);
     ~ThreadPool();
 
@@ -27,6 +29,9 @@ public:
 	ThreadPool& operator=(ThreadPool&&) = delete;
 
     std::future<void> enqueue(std::function<void()> f);
+
+    static std::vector<Future> create_futures(usize thread_count);
+    static void await_futures(std::vector<Future>& futures);
 
 private:
     bool should_terminate_;
@@ -94,6 +99,18 @@ inline std::future<void> ThreadPool::enqueue(std::function<void()> f) {
 
     mutex_cond_.notify_one();
     return future;
+}
+
+inline std::vector<ThreadPool::Future> ThreadPool::create_futures(usize thread_count) {
+    std::vector<ThreadPool::Future> futures{};
+    futures.reserve(thread_count);
+    return futures;
+}
+
+inline void ThreadPool::await_futures(std::vector<ThreadPool::Future>& futures) {
+    for (auto& future : futures) {
+        future.wait();
+    }
 }
 
 }

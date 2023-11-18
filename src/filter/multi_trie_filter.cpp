@@ -12,7 +12,7 @@ namespace wolf {
 // ----------------------------------------------
 
 MultiTrieFilter::MultiTrieFilter(usize thread_count)
-    : thread_count_(thread_count), pool_(thread_count), futures_(thread_count), tries_(thread_count)
+    : thread_count_(thread_count), pool_(thread_count), tries_(thread_count)
 { }
 
 MultiTrieFilterSession MultiTrieFilter::create_session() const {
@@ -26,30 +26,45 @@ MultiTrieFilterSession MultiTrieFilter::create_session() const {
     return session;
 }
 
+// BUG(lm): data is only distributed equally across threads for one call of this function
+//          calling this function multiple times with less data than thread_count_ will
+//          lead to sub-optimal distribution of words
 void MultiTrieFilter::insert_all(const std::vector<std::string>& unfiltered) {
-    const usize target_chunk_size = unfiltered.size() / thread_count_;
+    const usize target_chunk_size = std::max(MIN_CHUNK_SIZE_, unfiltered.size() / thread_count_);
+
+    auto futures = ThreadPool::create_futures(thread_count_);
 
     for (usize i = 0; i < thread_count_; i++) {
         usize start = i * target_chunk_size;
+
+        // NOTE(lm): if there's not enough data to fill all threads, then we're done
+        if (start >= unfiltered.size()) { break; }
+
         usize effective_chunk_size = std::min(target_chunk_size, unfiltered.size() - start);
 
-        futures_[i] = pool_.enqueue([this, &unfiltered, start, effective_chunk_size, i] {
-            const auto first = &unfiltered[start];
-            tries_[i].insert_all(first, first + effective_chunk_size);
-        });
+        futures.emplace_back(
+            pool_.enqueue([this, &unfiltered, start, effective_chunk_size, i] {
+                const auto first = &unfiltered[start];
+                tries_[i].insert_all(first, first + effective_chunk_size);
+            })
+        );
     }
 
-    await_futures();
+    ThreadPool::await_futures(futures);
 }
 
 void MultiTrieFilter::filter(MultiTrieFilterSession& session, const std::string& prefix) {
+    auto futures = ThreadPool::create_futures(thread_count_);
+
     for (usize i = 0; i < thread_count_; i++) {
-        futures_[i] = pool_.enqueue([this, &session, &prefix, i]() {
-            tries_[i].filter(&session.trie_sessions[i], prefix);
-        });
+        futures.emplace_back(
+            pool_.enqueue([this, &session, &prefix, i]() {
+                tries_[i].filter(&session.trie_sessions[i], prefix);
+            })
+        );
     }
 
-    await_futures();
+    ThreadPool::await_futures(futures);
 }
 
 void MultiTrieFilter::collect(MultiTrieFilterSession& session) {
@@ -62,25 +77,24 @@ void MultiTrieFilter::collect(MultiTrieFilterSession& session) {
     session.filtered_.resize(total_size);
     if (total_size == 0) { return; }
 
+    auto futures = ThreadPool::create_futures(thread_count_);
     usize offset = 0;
+
     for (usize i = 0; i < thread_count_; i++) {
         if (session.trie_sessions[i].node == nullptr) { continue; }
 
-        futures_[i] = pool_.enqueue([this, &session, offset, i] {
-            tries_[i].collect(&session.trie_sessions[i], session.filtered_, offset);
-        });
+        futures.emplace_back(
+            pool_.enqueue([this, &session, offset, i] {
+                tries_[i].collect(&session.trie_sessions[i], session.filtered_, offset);
+            })
+        );
 
         offset += session.trie_sessions[i].node->word_count;
     }
 
-    await_futures();
+    ThreadPool::await_futures(futures);
 }
 
-void MultiTrieFilter::await_futures() {
-    for (auto& future : futures_) {
-        future.wait();
-    }
-}
 
 // ----------------------------------------------
 

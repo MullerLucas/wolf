@@ -1,0 +1,7 @@
+#!/bin/bash
+
+CSD=$(dirname "$0")
+
+echo "$@"
+eval "$CSD/build" || exit 1
+eval "$CSD/../target/debug/wolf" "$@" || exit 1

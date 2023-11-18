@@ -31,13 +31,15 @@ public:
     void stop();
 
 private:
-    usize                          thread_count_;
-    ThreadPool                     pool_;
-    std::vector<std::future<void>> futures_;
+    const usize MIN_CHUNK_SIZE_ = 1;
 
+    usize                 thread_count_;
+    ThreadPool            pool_;
     std::vector<WordTrie> tries_;
 
     void await_futures();
+    std::vector<ThreadPool::Future> create_futures(usize thread_count);
+
 };
 
 // ----------------------------------------------
