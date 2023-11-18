@@ -12,7 +12,6 @@ class IncrementalFilterRunner : public Runner {
 public:
     IncrementalFilterRunner(const Config& config);
 
-    void setup() override;
     void run() override;
 
 private:

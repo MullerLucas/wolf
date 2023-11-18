@@ -1,29 +1,41 @@
 #include "oneshot_filter_runner.h"
 #include "../filter/multi_trie_filter.h"
+#include <stdexcept>
 
 namespace wolf {
 
 // ----------------------------------------------
 
 OneShotFilterRunner::OneShotFilterRunner(const Config& config)
-    : Runner(config), filter_(config_.thread_count)
-{
-    input_ = reader_->read_lines();
-    assert(!input_.empty());
-}
-
-void OneShotFilterRunner::setup() {
-    session_ = filter_.create_session();
-    filter_.insert_all(input_);
-}
+    : Runner(config)
+{ }
 
 void OneShotFilterRunner::run() {
-    filter_.filter(session_, config_.prefix);
-    filter_.collect(session_);
+    Timer t;
 
-    writer_->write_lines(session_.filtered_);
+    const auto input = read_word_list();
 
-    should_run_ = false;
+    // create filter
+    t.restart();
+    auto filter  = std::make_unique<MultiTrieFilter>(config_.thread_count);
+    auto session = filter->create_session();
+    t.stop();
+    log_info("Create filter: %i us\n", t.elapsed_us().count());
+
+    // insert data
+    t.restart();
+    filter->insert_all(input);
+    t.stop();
+    log_info("Insert data: %i us\n", t.elapsed_us().count());
+
+    // run filter
+    t.restart();
+    filter->filter(session, config_.prefix);
+    filter->collect(session);
+    t.stop();
+    log_info("Running Filter: %i us\n", t.elapsed_us().count());
+
+    writer_->write_lines(session.filtered_);
 }
 
 // ----------------------------------------------

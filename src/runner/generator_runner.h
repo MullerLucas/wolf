@@ -13,7 +13,6 @@ class GeneratorRunner : public Runner {
 public:
     GeneratorRunner(const Config& config);
 
-    void setup() override;
     void run() override;
 
 private:

@@ -12,24 +12,19 @@ namespace wolf {
 
 BenchmarkRunner::BenchmarkRunner(const Config& config)
     : Runner(config)
-{
-    input_ = reader_->read_lines();
-    assert(!input_.empty());
-}
-
-void BenchmarkRunner::setup() { }
+{ }
 
 void BenchmarkRunner::run() {
+    const auto input = read_word_list();
+
     Benchmark bench(
         *writer_,
-        input_,
+        input,
         { "A", "BC", "CAB", "ABCD" },
         { 1, 2, 4, 8, 12, 16, 32, 48 },
         10
     );
     bench.run();
-
-    should_run_ = false;
 }
 
 // ----------------------------------------------

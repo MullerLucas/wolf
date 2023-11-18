@@ -47,6 +47,12 @@ Config config_from_args(char** first, char** last) {
             else if (strcmp(*first, "gen") == 0) {
                 config.run_mode = RunMode::GenerateTestData;
                 config.gen_width = std::stoi(*++first);
+
+                if (strcmp(*++first, "true") == 0) {
+                    config.gen_shuffle = true;
+                } else {
+                    config.gen_shuffle = false;
+                }
             }
             // benchmark
             else if (strcmp(*first, "bench") == 0) {
@@ -54,12 +60,6 @@ Config config_from_args(char** first, char** last) {
 
                 // iterations
                 config.bench_iters = std::stoi(*++first);
-
-                if (strcmp(*++first, "true")) {
-                    config.bench_shuffle = true;
-                } else {
-                    config.bench_shuffle = false;
-                }
             }
         }
         // input-file
@@ -88,15 +88,15 @@ Config config_from_args(char** first, char** last) {
 
 void log_config(const Config& config) {
     log_info("Config:\n");
-    log_info("  run_mode:      %d\n",  config.run_mode);
-    log_info("  input_file:    %s\n",  config.input_file.value_or("nullopt").c_str());
-    log_info("  output_file:   %s\n",  config.output_file.value_or("nullopt").c_str());
-    log_info("  prefix:        %s\n",  config.prefix.c_str());
-    log_info("  thread_count:  %zu\n", config.thread_count);
-    log_info("  gen_width:     %zu\n", config.gen_width);
-    log_info("  bench_shuffle: %d\n",  config.bench_shuffle);
-    log_info("  bench_iters:   %zu\n", config.bench_iters);
-    log_info("  is_verbose:    %d\n",  config.is_verbose);
+    log_info("  run_mode:     %d\n",  config.run_mode);
+    log_info("  input_file:   %s\n",  config.input_file.value_or("nullopt").c_str());
+    log_info("  output_file:  %s\n",  config.output_file.value_or("nullopt").c_str());
+    log_info("  prefix:       %s\n",  config.prefix.c_str());
+    log_info("  thread_count: %zu\n", config.thread_count);
+    log_info("  gen_width:    %zu\n", config.gen_width);
+    log_info("  gen_shuffle:  %d\n",  config.gen_shuffle);
+    log_info("  bench_iters:  %zu\n", config.bench_iters);
+    log_info("  is_verbose:   %d\n",  config.is_verbose);
     log_info("\n");
 }
 
@@ -105,10 +105,10 @@ void log_help() {
     << "Usage: wolf [options]\n"
     << "Options:\n"
     << "  -m, --mode         Run Mode\n"
-    << "                     fos <prefix>: filter: one-shot\n"
-    << "                     fin:          filter: incremental\n"
-    << "                     gen <width>:  generate test data\n"
-    << "                     bench <iter>: benchmark\n"
+    << "                     fos <prefix>         : filter: one-shot\n"
+    << "                     fin                  : filter: incremental\n"
+    << "                     gen <width> <suffle> : generate test data\n"
+    << "                     bench <iter>         : benchmark\n"
     << "  -h, --help         Show help\n"
     << "  -i, --input        Input file\n"
     << "  -o, --output       Output file\n"

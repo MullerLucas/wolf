@@ -2,6 +2,5 @@
 
 CSD=$(dirname "$0")
 
-echo "$@"
 eval "$CSD/build -r" || exit 1
 eval "$CSD/../target/release/wolf" "$@" || exit 1

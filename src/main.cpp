@@ -40,6 +40,7 @@ int main(int argc, char** argv) {
         log_config(config);
     }
 
+    // show help, if needed
     if (config.run_mode == RunMode::Help) {
         log_help();
         return 0;
@@ -47,24 +48,8 @@ int main(int argc, char** argv) {
 
     // run runners
     {
-        Timer t;
-
-        t.restart();
         auto runner = Runner::create(config);
-        t.stop();
-        log_info("Runner-Construction took %d us\n", t.elapsed_us());
-
-        t.restart();
-        runner->setup();
-        t.stop();
-        log_info("Runner-Setup took %d us\n", t.elapsed_us());
-
-        while (runner->should_run_) {
-            t.restart();
-            runner->run();
-            t.stop();
-            log_info("Runner-Iteration took %d us\n", t.elapsed_us());
-        }
+        runner->run();
     }
 
     return 0;

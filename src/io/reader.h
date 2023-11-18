@@ -11,8 +11,8 @@ namespace wolf {
 
 class Reader {
 public:
-    virtual std::vector<std::string> read_lines() = 0;
     virtual ~Reader() = default;
+    virtual std::vector<std::string> read_lines() = 0;
 };
 
 // ----------------------------------------------

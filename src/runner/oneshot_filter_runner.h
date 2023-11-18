@@ -12,13 +12,7 @@ class OneShotFilterRunner : public Runner {
 public:
     OneShotFilterRunner(const Config& config);
 
-    void setup() override;
     void run() override;
-
-private:
-    std::vector<std::string> input_;
-    MultiTrieFilter          filter_;
-    MultiTrieFilterSession   session_;
 };
 
 }

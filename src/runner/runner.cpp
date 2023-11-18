@@ -12,7 +12,7 @@ namespace wolf {
 // ----------------------------------------------
 
 Runner::Runner(const Config& config)
-    : should_run_(true), config_(config)
+    : config_(config)
 {
     if (config.input_file.has_value()) {
         reader_ = new FileReader(config.input_file.value());
@@ -48,6 +48,14 @@ std::unique_ptr<Runner> Runner::create(const Config& config) {
     }
 
     return nullptr;
+}
+
+std::vector<std::string> Runner::read_word_list() {
+    const auto input = reader_->read_lines();
+    if (input.empty()) {
+        std::runtime_error("Input is empty");
+    }
+    return input;
 }
 
 // ----------------------------------------------

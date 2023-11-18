@@ -28,7 +28,7 @@ struct Config {
 
     usize thread_count  = std::thread::hardware_concurrency();
     usize gen_width     = 4;
-    bool  bench_shuffle = false;
+    bool  gen_shuffle   = false;
     usize bench_iters   = 10;
     bool  is_verbose    = false;
 };

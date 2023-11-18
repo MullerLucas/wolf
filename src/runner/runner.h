@@ -3,6 +3,8 @@
 #include "../config.h"
 #include "../io/writer.h"
 #include "../io/reader.h"
+#include <string>
+#include <vector>
 
 namespace wolf {
 
@@ -10,8 +12,6 @@ namespace wolf {
 
 class Runner {
 public:
-    bool should_run_;
-
     Runner(const Config& config);
     virtual ~Runner();
 
@@ -22,13 +22,14 @@ public:
 
     static std::unique_ptr<Runner> create(const Config& config);
 
-    virtual void setup() = 0;
     virtual void run() = 0;
 
 protected:
     const Config& config_;
     Reader* reader_;
     Writer* writer_;
+
+    std::vector<std::string> read_word_list();
 };
 
 // ----------------------------------------------
