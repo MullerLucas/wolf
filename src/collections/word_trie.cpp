@@ -17,34 +17,32 @@ WordTrie::~WordTrie() {
 
 WordTrieSession WordTrie::create_session() const {
     return WordTrieSession {
-        .filtered    = {},
         .prefix = "",
         .node    = root_
     };
 }
 
+// NOTE(lm): assumes words are not already in trie (no duplicates)
 void WordTrie::insert_all(const std::string* first, const std::string* last) {
     for (; first != last; ++first) {
         (void)insert(*first);
     }
 }
 
-bool WordTrie::insert(const std::string& word) {
+// NOTE(lm): assumes word is not already in trie (no duplicates)
+void WordTrie::insert(const std::string& word) {
     WordTrieNode* curr = root_;
 
     for (char ch : word) {
         if (curr->children.find(ch) == curr->children.end()) {
             curr->children[ch] = new WordTrieNode();
         }
+        curr->word_count += 1;
         curr = curr->children[ch];
     }
 
-    if (curr->word != nullptr) {
-        return false;
-    }
-
+    curr->word_count += 1;
     curr->word = &word;
-    return true;
 }
 
 void WordTrie::clear() {
@@ -58,9 +56,9 @@ void WordTrie::filter(WordTrieSession* session, const std::string& prefix) const
     session->node = find(session->node, prefix);
 }
 
-void WordTrie::collect(WordTrieSession* session) const {
+void WordTrie::collect(WordTrieSession* session, std::vector<const std::string*>& collector, usize offset) const {
     if (session->node) {
-        collect_words_rec(session, session->node);
+        collect_words_rec(session, session->node, collector, offset);
     }
 }
 
@@ -77,13 +75,19 @@ const WordTrieNode* WordTrie::find(const WordTrieNode* node, const std::string& 
     return curr;
 }
 
-void WordTrie::collect_words_rec(WordTrieSession* session, const WordTrieNode* node) const {
+void WordTrie::collect_words_rec(
+    WordTrieSession* session,
+    const WordTrieNode* node,
+    std::vector<const std::string*>& collector,
+    usize& offset
+) const {
     if (node->word) {
-        session->filtered.push_back(node->word);
+        collector[offset] = node->word;
+        offset += 1;
     }
 
     for (const auto& [key, child] : node->children) {
-        collect_words_rec(session, child);
+        collect_words_rec(session, child, collector, offset);
     }
 }
 

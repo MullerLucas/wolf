@@ -27,13 +27,17 @@ public:
 
     void insert_all(const std::vector<std::string>& unfiltered);
     void filter(MultiTrieFilterSession& session, const std::string& prefix);
-    void collect(MultiTrieFilterSession& session) const;
+    void collect(MultiTrieFilterSession& session);
     void stop();
 
 private:
-    usize                 thread_count_;
-    ThreadPool            pool_;
+    usize                          thread_count_;
+    ThreadPool                     pool_;
+    std::vector<std::future<void>> futures_;
+
     std::vector<WordTrie> tries_;
+
+    void await_futures();
 };
 
 // ----------------------------------------------
