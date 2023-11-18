@@ -40,9 +40,9 @@ void Bench::run() const {
     }
     writer_ << "\n\n";
 
-    // log_info("Running-Simple-Vector-Filter benchmarks\n");
-    // writer_ << "Simple-Vector-Filter:\n";
-    // run_any(run_vector_filter);
+    log_info("Running-Simple-Vector-Filter benchmarks\n");
+    writer_ << "Simple-Vector-Filter:\n";
+    run_any(run_vector_filter);
 
     log_info("Running Multi-Trie-Filter benchmarks\n");
     writer_ << "\nMulti-Trie-Filter:\n";

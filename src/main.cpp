@@ -57,7 +57,7 @@ void run_benchmark() {
         input,
         { "A", "BC", "CAB", "ABCD" },
         { 1, 2, 4, 8, 12, 16, 32 },
-        10
+        100
     );
     bench.run();
 }

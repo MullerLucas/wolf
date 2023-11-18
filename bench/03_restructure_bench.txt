@@ -1,0 +1,64 @@
+Benchmark (2023-11-18 11:06:43)
+Input:      456976 words
+Iterations: 100
+Threads:    1 2 4 8 12 16 32 
+
+Simple-Vector-Filter:
+   Pre:        A   Ttr:        1   All:      771   Con:        9   Ses:        0   Ins:      162   Fil:      600   Col:        0       
+   Pre:        A   Ttr:        2   All:      975   Con:       19   Ses:        0   Ins:      520   Fil:      436   Col:        0       
+   Pre:        A   Ttr:        4   All:      689   Con:       34   Ses:        0   Ins:      338   Fil:      317   Col:        0       
+   Pre:        A   Ttr:        8   All:      551   Con:       85   Ses:        0   Ins:      210   Fil:      256   Col:        0       
+   Pre:        A   Ttr:       12   All:      617   Con:      176   Ses:        0   Ins:      219   Fil:      222   Col:        0       
+   Pre:        A   Ttr:       16   All:      628   Con:      229   Ses:        0   Ins:      173   Fil:      226   Col:        0       
+   Pre:        A   Ttr:       32   All:     1095   Con:      551   Ses:        0   Ins:      224   Fil:      320   Col:        0       
+   Pre:       BC   Ttr:        1   All:      705   Con:        9   Ses:        0   Ins:      168   Fil:      528   Col:        0       
+   Pre:       BC   Ttr:        2   All:      938   Con:       18   Ses:        0   Ins:      551   Fil:      369   Col:        0       
+   Pre:       BC   Ttr:        4   All:      645   Con:       35   Ses:        0   Ins:      368   Fil:      242   Col:        0       
+   Pre:       BC   Ttr:        8   All:      433   Con:       90   Ses:        0   Ins:      172   Fil:      171   Col:        0       
+   Pre:       BC   Ttr:       12   All:      581   Con:      181   Ses:        0   Ins:      240   Fil:      160   Col:        0       
+   Pre:       BC   Ttr:       16   All:      606   Con:      238   Ses:        0   Ins:      208   Fil:      160   Col:        0       
+   Pre:       BC   Ttr:       32   All:     1073   Con:      572   Ses:        0   Ins:      242   Fil:      259   Col:        0       
+   Pre:      CAB   Ttr:        1   All:      730   Con:       10   Ses:        0   Ins:      170   Fil:      550   Col:        0       
+   Pre:      CAB   Ttr:        2   All:      961   Con:       20   Ses:        0   Ins:      563   Fil:      378   Col:        0       
+   Pre:      CAB   Ttr:        4   All:      643   Con:       37   Ses:        0   Ins:      370   Fil:      236   Col:        0       
+   Pre:      CAB   Ttr:        8   All:      498   Con:       89   Ses:        0   Ins:      241   Fil:      168   Col:        0       
+   Pre:      CAB   Ttr:       12   All:      583   Con:      179   Ses:        0   Ins:      244   Fil:      160   Col:        0       
+   Pre:      CAB   Ttr:       16   All:      634   Con:      239   Ses:        0   Ins:      228   Fil:      167   Col:        0       
+   Pre:      CAB   Ttr:       32   All:     1046   Con:      540   Ses:        0   Ins:      253   Fil:      253   Col:        0       
+   Pre:     ABCD   Ttr:        1   All:      784   Con:       10   Ses:        0   Ins:      170   Fil:      604   Col:        0       
+   Pre:     ABCD   Ttr:        2   All:      821   Con:       19   Ses:        0   Ins:      434   Fil:      368   Col:        0       
+   Pre:     ABCD   Ttr:        4   All:      390   Con:       31   Ses:        0   Ins:      169   Fil:      190   Col:        0       
+   Pre:     ABCD   Ttr:        8   All:      417   Con:       86   Ses:        0   Ins:      170   Fil:      161   Col:        0       
+   Pre:     ABCD   Ttr:       12   All:      487   Con:      161   Ses:        0   Ins:      172   Fil:      154   Col:        0       
+   Pre:     ABCD   Ttr:       16   All:      603   Con:      233   Ses:        0   Ins:      208   Fil:      162   Col:        0       
+   Pre:     ABCD   Ttr:       32   All:      923   Con:      531   Ses:        0   Ins:      174   Fil:      218   Col:        0       
+
+Multi-Trie-Filter:
+   Pre:        A   Ttr:        1   All:    94487   Con:       11   Ses:        0   Ins:    93398   Fil:       10   Col:     1068       
+   Pre:        A   Ttr:        2   All:    50529   Con:       40   Ses:        0   Ins:    49532   Fil:       14   Col:      943       
+   Pre:        A   Ttr:        4   All:    30400   Con:       71   Ses:        0   Ins:    29278   Fil:       17   Col:     1034       
+   Pre:        A   Ttr:        8   All:    22787   Con:      142   Ses:        0   Ins:    21516   Fil:       15   Col:     1114       
+   Pre:        A   Ttr:       12   All:    20048   Con:      300   Ses:        0   Ins:    18522   Fil:       23   Col:     1203       
+   Pre:        A   Ttr:       16   All:    18439   Con:      357   Ses:        0   Ins:    16745   Fil:       26   Col:     1311       
+   Pre:        A   Ttr:       32   All:    15185   Con:      782   Ses:        2   Ins:    12921   Fil:       55   Col:     1425       
+   Pre:       BC   Ttr:        1   All:    91300   Con:       21   Ses:        0   Ins:    91225   Fil:       12   Col:       42       
+   Pre:       BC   Ttr:        2   All:    49336   Con:       44   Ses:        0   Ins:    49225   Fil:       13   Col:       54       
+   Pre:       BC   Ttr:        4   All:    32271   Con:       67   Ses:        0   Ins:    32128   Fil:       15   Col:       61       
+   Pre:       BC   Ttr:        8   All:    21847   Con:      138   Ses:        0   Ins:    21611   Fil:       21   Col:       77       
+   Pre:       BC   Ttr:       12   All:    18614   Con:      299   Ses:        0   Ins:    18214   Fil:       23   Col:       78       
+   Pre:       BC   Ttr:       16   All:    18555   Con:      353   Ses:        0   Ins:    18089   Fil:       26   Col:       87       
+   Pre:       BC   Ttr:       32   All:    14779   Con:      751   Ses:        1   Ins:    13875   Fil:       45   Col:      107       
+   Pre:      CAB   Ttr:        1   All:    87370   Con:       23   Ses:        0   Ins:    87331   Fil:       14   Col:        2       
+   Pre:      CAB   Ttr:        2   All:    55798   Con:       40   Ses:        0   Ins:    55742   Fil:       14   Col:        2       
+   Pre:      CAB   Ttr:        4   All:    33119   Con:       65   Ses:        0   Ins:    33033   Fil:       17   Col:        4       
+   Pre:      CAB   Ttr:        8   All:    22776   Con:      132   Ses:        0   Ins:    22618   Fil:       22   Col:        4       
+   Pre:      CAB   Ttr:       12   All:    20070   Con:      288   Ses:        0   Ins:    19751   Fil:       26   Col:        5       
+   Pre:      CAB   Ttr:       16   All:    18850   Con:      348   Ses:        0   Ins:    18468   Fil:       29   Col:        5       
+   Pre:      CAB   Ttr:       32   All:    15256   Con:      736   Ses:        0   Ins:    14463   Fil:       52   Col:        5       
+   Pre:     ABCD   Ttr:        1   All:    90541   Con:       32   Ses:        0   Ins:    90496   Fil:       13   Col:        0       
+   Pre:     ABCD   Ttr:        2   All:    49320   Con:       49   Ses:        0   Ins:    49256   Fil:       15   Col:        0       
+   Pre:     ABCD   Ttr:        4   All:    30628   Con:       69   Ses:        0   Ins:    30538   Fil:       21   Col:        0       
+   Pre:     ABCD   Ttr:        8   All:    24316   Con:      137   Ses:        0   Ins:    24158   Fil:       21   Col:        0       
+   Pre:     ABCD   Ttr:       12   All:    20513   Con:      289   Ses:        0   Ins:    20198   Fil:       26   Col:        0       
+   Pre:     ABCD   Ttr:       16   All:    19591   Con:      346   Ses:        0   Ins:    19216   Fil:       29   Col:        0       
+   Pre:     ABCD   Ttr:       32   All:    15436   Con:      767   Ses:        2   Ins:    14622   Fil:       45   Col:        0       
