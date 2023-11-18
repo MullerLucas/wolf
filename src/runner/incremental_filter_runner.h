@@ -8,9 +8,9 @@
 
 namespace wolf {
 
-class OneShotFilterRunner : public Runner {
+class IncrementalFilterRunner : public Runner {
 public:
-    OneShotFilterRunner(const Config& config);
+    IncrementalFilterRunner(const Config& config);
 
     void setup() override;
     void run() override;

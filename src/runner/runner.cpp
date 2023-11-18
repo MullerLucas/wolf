@@ -3,6 +3,7 @@
 
 #include "benchmark_runner.h"
 #include "generator_runner.h"
+#include "incremental_filter_runner.h"
 #include "oneshot_filter_runner.h"
 #include "runner.h"
 
@@ -36,8 +37,7 @@ std::unique_ptr<Runner> Runner::create(const Config& config) {
         case RunMode::FilterOneShot:
             return std::make_unique<OneShotFilterRunner>(config);
         case RunMode::FilterIncremental:
-            // TODO: implement
-            std::runtime_error("Unknown operation type");
+            return std::make_unique<IncrementalFilterRunner>(config);
         case RunMode::GenerateTestData:
             return std::make_unique<GeneratorRunner>(config);
         case RunMode::Benchmark:
