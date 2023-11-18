@@ -12,7 +12,6 @@ enum class OperationType {
     FilterWords,
     GenerateTestData,
     Benchmark,
-    Help,
 };
 
 // ----------------------------------------------
@@ -47,6 +46,7 @@ const Config DEFAULT_CONFIG = {
 
 Config config_from_args(char** first, char** last);
 void   log_config(const Config& config);
+void   log_help();
 
 // ----------------------------------------------
 

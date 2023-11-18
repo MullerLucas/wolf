@@ -38,7 +38,8 @@ Config config_from_args(char** first, char** last) {
             config.operation_type = OperationType::Benchmark;
         }
         else if (compare_options(*first, "-h", "--help")) {
-            config.operation_type = OperationType::Help;
+            log_help();
+            exit(0);
         }
         // input-file
         else if (compare_options(*first, "-i", "--input")) {
@@ -90,6 +91,24 @@ void log_config(const Config& config) {
     log_info("  width: %zu\n",         config.width);
     log_info("  is_incremental: %d\n", config.is_incremental);
     log_info("  should_shuffle: %d\n", config.should_shuffle);
+}
+
+void log_help() {
+    std::cout
+    << "Usage: wolf [options] [prefix]\n"
+    << "Options:\n"
+    << "  -f, --filter       Filter words\n"
+    << "  -g, --generate     Generate test data\n"
+    << "  -b, --bench        Benchmark\n"
+    << "  -h, --help         Show help\n"
+    << "  -i, --input        Input file\n"
+    << "  -o, --output       Output file\n"
+    << "  -p, --prefix       Prefix\n"
+    << "  -t, --threads      Number of threads\n"
+    << "  -w, --width        Width of test data\n"
+    << "  -i, --incremental  Incremental filter\n"
+    << "  -s, --shuffle      Shuffle test data\n"
+    << "  -v, --verbose      Verbose\n";
 }
 
 };
