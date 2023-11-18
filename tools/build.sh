@@ -29,12 +29,13 @@ if [ "$IS_DEBUG_BUILD" = true ]; then
     TARGET_DIR=target/debug
     OPTIMIZATION="-Og"
     DEBUG_SYMBOLS="-g"
-    SANITIZERS="-fsanitize=undefined,thread"
+    SANITIZERS="-fsanitize=address,undefined"
 
     echo "creating debug build"
 else
     TARGET_DIR=target/release
     OPTIMIZATION="-O3"
+    DEBUG_SYMBOLS="-g"
     SANITIZERS=""
 
     echo "creating release build"

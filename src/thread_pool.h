@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utils.h"
 #include <functional>
 #include <future>
 #include <memory>
@@ -10,6 +9,8 @@
 #include <utility>
 #include <vector>
 #include <type_traits>
+
+#include "utils.h"
 
 namespace wolf {
 
@@ -76,7 +77,6 @@ inline ThreadPool::~ThreadPool() {
 }
 
 inline std::future<void> ThreadPool::enqueue(std::function<void()> f) {
-    // make shared, so its copie-constructable
     auto task = std::make_shared<std::packaged_task<void()>>(std::move(f));
     std::future<void> future = task->get_future();
 

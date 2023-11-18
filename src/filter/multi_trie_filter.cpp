@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <chrono>
+#include <string>
 #include <thread>
 #include <vector>
-#include <string>
 
 #include "multi_trie_filter.h"
 
@@ -19,7 +19,16 @@ MultiTrieFilter::MultiTrieFilter(usize thread_count)
     }
 }
 
-MultiTrieFilter::~MultiTrieFilter() { }
+MultiTrieFilterSession MultiTrieFilter::create_session() const {
+    MultiTrieFilterSession session;
+
+    session.trie_sessions.reserve(thread_count_);
+    for (usize i = 0; i < thread_count_; i++) {
+        session.trie_sessions.emplace_back(tries_[i].create_session());
+    }
+
+    return session;
+}
 
 void MultiTrieFilter::insert_all(const std::vector<std::string>& unfiltered) {
     const usize target_chunk_size = unfiltered.size() / thread_count_;
@@ -57,22 +66,18 @@ void MultiTrieFilter::filter(MultiTrieFilterSession& session, const std::string&
     for (auto& future : futures) {
         future.wait();
     }
+}
+
+void MultiTrieFilter::collect(MultiTrieFilterSession& session) const {
+    // TOTO(lm): parallelize
+    for (usize i = 0; i < thread_count_; i++) {
+        tries_[i].collect(&session.trie_sessions[i]);
+    }
 
     session.filtered_.clear();
     for (auto& ts : session.trie_sessions) {
-        session.filtered_.insert(session.filtered_.end(), ts.filtered_.begin(), ts.filtered_.end());
+        session.filtered_.insert(session.filtered_.end(), ts.filtered.begin(), ts.filtered.end());
     }
-}
-
-MultiTrieFilterSession MultiTrieFilter::create_session() const {
-    MultiTrieFilterSession session;
-
-    session.trie_sessions.reserve(thread_count_);
-    for (usize i = 0; i < thread_count_; i++) {
-        session.trie_sessions.emplace_back(tries_[i].create_session());
-    }
-
-    return session;
 }
 
 // ----------------------------------------------

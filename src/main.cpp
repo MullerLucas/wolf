@@ -35,10 +35,11 @@ void run_filter_words(Config& config) {
     // filter->init_data(&input);
     // filter->filter(config.prefix);
 
-    auto filter  = std::make_unique<MultiTrieFilter>(1);
+    auto filter  = std::make_unique<MultiTrieFilter>(config.num_threads);
     filter->insert_all(input);
     auto session = filter->create_session();
     filter->filter(session, config.prefix);
+    filter->collect(session);
 
     std::unique_ptr<Writer> writer = std::make_unique<ConsoleWriter>();
     writer->write_lines(session.filtered_);
@@ -56,7 +57,7 @@ void run_benchmark() {
         input,
         { "A", "BC", "CAB", "ABCD" },
         { 1, 2, 4, 8, 12, 16, 32 },
-        300
+        10
     );
     bench.run();
 }

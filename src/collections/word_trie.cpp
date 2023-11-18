@@ -17,9 +17,9 @@ WordTrie::~WordTrie() {
 
 WordTrieSession WordTrie::create_session() const {
     return WordTrieSession {
-        .filtered_    = {},
-        .curr_prefix_ = "",
-        .curr_node    = root_
+        .filtered    = {},
+        .prefix = "",
+        .node    = root_
     };
 }
 
@@ -53,23 +53,25 @@ void WordTrie::clear() {
     });
 }
 
-void WordTrie::filter(WordTrieSession* session, const std::string& prefix) {
-    session->curr_prefix_ += prefix;
+void WordTrie::filter(WordTrieSession* session, const std::string& prefix) const {
+    session->prefix += prefix;
+    session->node = find(session->node, prefix);
+}
 
-    const WordTrieNode* node = find(prefix);
-    if (node) {
-        collect_words_rec(session, node);
+void WordTrie::collect(WordTrieSession* session) const {
+    if (session->node) {
+        collect_words_rec(session, session->node);
     }
 }
 
-const WordTrieNode* WordTrie::find(const std::string& prefix) const {
-    WordTrieNode* curr = root_;
+const WordTrieNode* WordTrie::find(const WordTrieNode* node, const std::string& prefix) const {
+    const WordTrieNode* curr = node;
 
     for (char ch : prefix) {
         if (curr->children.find(ch) == curr->children.end()) {
             return nullptr;
         }
-        curr = curr->children[ch];
+        curr = curr->children.at(ch);
     }
 
     return curr;
@@ -77,7 +79,7 @@ const WordTrieNode* WordTrie::find(const std::string& prefix) const {
 
 void WordTrie::collect_words_rec(WordTrieSession* session, const WordTrieNode* node) const {
     if (node->word) {
-        session->filtered_.push_back(node->word);
+        session->filtered.push_back(node->word);
     }
 
     for (const auto& [key, child] : node->children) {

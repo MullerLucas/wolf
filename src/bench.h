@@ -11,11 +11,11 @@ namespace wolf {
 // ----------------------------------------------
 
 struct BenchResult {
-    i64 construction_time;
-    i64 setup_time;
+    i64 construct_time;
+    i64 session_time;
+    i64 insert_time;
     i64 filter_time;
-
-    i64 total_time;
+    i64 collect_time;
 };
 
 // ----------------------------------------------

@@ -14,30 +14,18 @@ namespace wolf {
 // ----------------------------------------------
 
 struct WordTrieNode {
-    char key;
     std::unordered_map<char, WordTrieNode*> children;
+    char               key;
     const std::string* word;
 };
 
 // ----------------------------------------------
 
-struct WordTrieMetrics {
-    i64 construct_time;
-    i64 filter_time;
-    i64 collect_time;
-
-    i64 total_time() const {
-        return construct_time + filter_time + collect_time;
-    }
-};
-
-// ----------------------------------------------
-
 struct WordTrieSession {
-    std::vector<const std::string*> filtered_;
+    std::vector<const std::string*> filtered;
 
-    std::string   curr_prefix_;
-    WordTrieNode* curr_node;
+    std::string         prefix;
+    const WordTrieNode* node;
 };
 
 // ----------------------------------------------
@@ -53,12 +41,13 @@ public:
     bool insert(const std::string& word);
     void clear();
 
-    void filter(WordTrieSession* session, const std::string& prefix);
+    void filter (WordTrieSession* session, const std::string& prefix) const;
+    void collect(WordTrieSession* session) const;
 
 private:
     WordTrieNode* root_;
 
-    const WordTrieNode* find(const std::string& prefix) const;
+    const WordTrieNode* find(const WordTrieNode* node, const std::string& prefix) const;
     void collect_words_rec(WordTrieSession* session, const WordTrieNode* node) const;
 
     static void traverse_nodes_postorder(WordTrieNode* node, std::function<void(WordTrieNode*)> cb);

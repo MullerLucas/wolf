@@ -40,13 +40,13 @@ void Bench::run() const {
     }
     writer_ << "\n\n";
 
-    log_info("Running-Simple-Vector-Filter benchmarks\n");
-    writer_ << "Simple-Vector-Filter:\n";
-    run_any(run_vector_filter);
+    // log_info("Running-Simple-Vector-Filter benchmarks\n");
+    // writer_ << "Simple-Vector-Filter:\n";
+    // run_any(run_vector_filter);
 
-    // log_info("Running Multi-Trie-Filter benchmarks\n");
-    // writer_ << "\nMulti-Trie-Filter:\n";
-    // run_any(run_trie_filter);
+    log_info("Running Multi-Trie-Filter benchmarks\n");
+    writer_ << "\nMulti-Trie-Filter:\n";
+    run_any(run_trie_filter);
 
 }
 
@@ -60,26 +60,33 @@ void Bench::run_any(
         for (auto nt : num_threads_) {
             log_info("%i sets remaining\n", remaining--);
 
-            i64 best_total_time        = std::numeric_limits<i64>::max();
-            i64 best_construction_time = std::numeric_limits<i64>::max();
-            i64 best_setup_time        = std::numeric_limits<i64>::max();
-            i64 best_filter_time       = std::numeric_limits<i64>::max();
+            i64 best_construct_time = std::numeric_limits<i64>::max();
+            i64 best_session_time   = std::numeric_limits<i64>::max();
+            i64 best_insert_time    = std::numeric_limits<i64>::max();
+            i64 best_filter_time    = std::numeric_limits<i64>::max();
+            i64 best_collect_time   = std::numeric_limits<i64>::max();
 
             for (usize i = 0; i < iterations_; ++i) {
                 auto result = fn(input_, p, nt);
-                best_total_time        = std::min(best_total_time,        result.total_time);
-                best_construction_time = std::min(best_construction_time, result.construction_time);
-                best_setup_time        = std::min(best_setup_time,        result.setup_time);
-                best_filter_time       = std::min(best_filter_time,       result.filter_time);
+                best_construct_time = std::min(best_construct_time, result.construct_time);
+                best_session_time   = std::min(best_session_time,   result.session_time);
+                best_insert_time    = std::min(best_insert_time,    result.insert_time);
+                best_filter_time    = std::min(best_filter_time,    result.filter_time);
+                best_collect_time   = std::min(best_collect_time,   result.collect_time);
             }
 
+            i64 best_total_time = best_construct_time + best_session_time + best_insert_time
+                + best_filter_time + best_collect_time;
+
             writer_
-            << "P: "   << p
-            << " T: "   << nt
-            << " ALL: " << best_total_time
-            << " C: "   << best_construction_time
-            << " S: "   << best_setup_time
-            << " F: "   << best_filter_time
+            << "Pre: "  << p
+            << " Ttr: " << nt
+            << " All: " << best_total_time
+            << " Con: " << best_construct_time
+            << " Ses: " << best_session_time
+            << " Ins: " << best_insert_time
+            << " Fil: " << best_filter_time
+            << " Col: " << best_collect_time
             << "\n";
         }
     }
@@ -92,28 +99,32 @@ BenchResult Bench::run_vector_filter(
     usize num_threads
 ) {
     BenchResult result;
-    Timer t_all;
-    Timer t_part;
+    Timer t;
 
-    t_all.restart();
-
-    t_part.restart();
+    t.restart();
     SimpleVectorFilter filter(num_threads);
-    t_part.stop();
-    result.construction_time = t_part.elapsed_us().count();
+    t.stop();
+    result.construct_time = t.elapsed_us().count();
 
-    t_part.restart();
+    t.restart();
+    // TODO
+    t.stop();
+    result.session_time = t.elapsed_us().count();
+
+    t.restart();
     filter.insert_all(&input);
-    t_part.stop();
-    result.setup_time = t_part.elapsed_us().count();
+    t.stop();
+    result.insert_time = t.elapsed_us().count();
 
-    t_part.restart();
+    t.restart();
     filter.filter(prefix);
-    t_part.stop();
-    result.filter_time = t_part.elapsed_us().count();
+    t.stop();
+    result.filter_time = t.elapsed_us().count();
 
-    t_all.stop();
-    result.total_time = t_all.elapsed_us().count();
+    t.restart();
+    // TODO
+    t.stop();
+    result.collect_time = t.elapsed_us().count();
 
     return result;
 }
@@ -124,29 +135,32 @@ BenchResult Bench::run_trie_filter(
     usize thread_count
 ) {
     BenchResult result;
-    Timer t_all;
-    Timer t_part;
+    Timer t;
 
-    t_all.restart();
-
-    t_part.restart();
+    t.restart();
     MultiTrieFilter filter(thread_count);
-    t_part.stop();
-    result.construction_time = t_part.elapsed_us().count();
+    t.stop();
+    result.construct_time = t.elapsed_us().count();
 
-    t_part.restart();
-    filter.insert_all(input);
-    t_part.stop();
-    result.setup_time = t_part.elapsed_us().count();
-
+    t.restart();
     auto session = filter.create_session();
-    t_part.restart();
-    filter.filter(session, prefix);
-    t_part.stop();
-    result.filter_time = t_part.elapsed_us().count();
+    t.stop();
+    result.session_time = t.elapsed_us().count();
 
-    t_all.stop();
-    result.total_time = t_all.elapsed_us().count();
+    t.restart();
+    filter.insert_all(input);
+    t.stop();
+    result.insert_time = t.elapsed_us().count();
+
+    t.restart();
+    filter.filter(session, prefix);
+    t.stop();
+    result.filter_time = t.elapsed_us().count();
+
+    t.restart();
+    filter.collect(session);
+    t.stop();
+    result.collect_time = t.elapsed_us().count();
 
     return result;
 }
