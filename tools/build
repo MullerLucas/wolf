@@ -24,6 +24,8 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 # -----------------------------------------------
 
+echo "-------------------------------------------"
+
 # set variables based on build type
 if [ "$IS_DEBUG_BUILD" = true ]; then
     TARGET_DIR=target/debug
@@ -58,4 +60,5 @@ clang++ \
     || exit 1
 
 echo "build complete"
-echo "--------------"
+echo "-------------------------------------------"
+echo

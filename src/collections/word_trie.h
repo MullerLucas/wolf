@@ -15,16 +15,22 @@ namespace wolf {
 
 struct WordTrieNode {
     std::unordered_map<char, WordTrieNode*> children;
-    char               key;
-    const std::string* word;
-    usize              word_count = 0;
+    WordTrieNode*                           parent              = nullptr;
+    const                                   std::string* word;
+    usize                                   word_count          = 0;
 };
 
 // ----------------------------------------------
 
 struct WordTrieSession {
-    std::string         prefix;
-    const WordTrieNode* node;
+    std::string         valid_prefix;
+    const WordTrieNode* valid_node      = nullptr;  // will always point to a vaild node
+    usize               depth           = 0;
+
+    // TODO(lm): struct should only contain data
+    bool is_valid() const {
+        return depth <= valid_prefix.size();
+    }
 };
 
 // ----------------------------------------------
@@ -40,19 +46,16 @@ public:
     void insert(const std::string& word);
     void clear();
 
-    void filter (WordTrieSession* session, const std::string& prefix) const;
+    void push_filter(WordTrieSession* session, const std::string& prefix) const;
+    void pop_filter(WordTrieSession* session, usize count) const;
     void collect(WordTrieSession* session, std::vector<const std::string*>& collector, usize offset) const;
 
 private:
     WordTrieNode* root_;
 
     const WordTrieNode* find(const WordTrieNode* node, const std::string& prefix) const;
-    void collect_words_rec(
-        WordTrieSession* session,
-        const WordTrieNode* node,
-        std::vector<const std::string*>& collector,
-        usize& offset
-    ) const;
+    void collect_words_rec(WordTrieSession* session, const WordTrieNode* node,
+                           std::vector<const std::string*>& collector, usize& offset) const;
 
     static void traverse_nodes_postorder(WordTrieNode* node, std::function<void(WordTrieNode*)> cb);
 };

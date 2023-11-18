@@ -154,7 +154,7 @@ BenchResult Benchmark::run_trie_filter(
     result.insert_time = t.elapsed_us().count();
 
     t.restart();
-    filter.filter(session, prefix);
+    filter.push_filter(session, prefix);
     t.stop();
     result.filter_time = t.elapsed_us().count();
 

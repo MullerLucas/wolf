@@ -26,16 +26,16 @@ public:
     MultiTrieFilterSession create_session() const;
 
     void insert_all(const std::vector<std::string>& unfiltered);
-    void filter(MultiTrieFilterSession& session, const std::string& prefix);
+    void push_filter(MultiTrieFilterSession& session, const std::string& prefix);
+    void pop_filter(MultiTrieFilterSession& session, usize count);
     void collect(MultiTrieFilterSession& session);
-    void stop();
 
 private:
     const usize MIN_CHUNK_SIZE_ = 1;
 
-    usize                 thread_count_;
-    ThreadPool            pool_;
-    std::vector<WordTrie> tries_;
+    usize                   thread_count_;
+    ThreadPool              pool_;
+    std::vector<WordTrie>   tries_;
 
     void await_futures();
     std::vector<ThreadPool::Future> create_futures(usize thread_count);

@@ -53,13 +53,27 @@ void MultiTrieFilter::insert_all(const std::vector<std::string>& unfiltered) {
     ThreadPool::await_futures(futures);
 }
 
-void MultiTrieFilter::filter(MultiTrieFilterSession& session, const std::string& prefix) {
+void MultiTrieFilter::push_filter(MultiTrieFilterSession& session, const std::string& prefix) {
     auto futures = ThreadPool::create_futures(thread_count_);
 
     for (usize i = 0; i < thread_count_; i++) {
         futures.emplace_back(
             pool_.enqueue([this, &session, &prefix, i]() {
-                tries_[i].filter(&session.trie_sessions[i], prefix);
+                tries_[i].push_filter(&session.trie_sessions[i], prefix);
+            })
+        );
+    }
+
+    ThreadPool::await_futures(futures);
+}
+
+void MultiTrieFilter::pop_filter(MultiTrieFilterSession& session, usize count) {
+    auto futures = ThreadPool::create_futures(thread_count_);
+
+    for (usize i = 0; i < thread_count_; i++) {
+        futures.emplace_back(
+            pool_.enqueue([this, &session, count, i]() {
+                tries_[i].pop_filter(&session.trie_sessions[i], count);
             })
         );
     }
@@ -70,8 +84,8 @@ void MultiTrieFilter::filter(MultiTrieFilterSession& session, const std::string&
 void MultiTrieFilter::collect(MultiTrieFilterSession& session) {
     usize total_size = 0;
     for (auto& ts : session.trie_sessions) {
-        if (ts.node == nullptr) { continue; }
-        total_size += ts.node->word_count;
+        if (!ts.is_valid()) { continue; }
+        total_size += ts.valid_node->word_count;
     }
 
     session.filtered_.resize(total_size);
@@ -81,7 +95,7 @@ void MultiTrieFilter::collect(MultiTrieFilterSession& session) {
     usize offset = 0;
 
     for (usize i = 0; i < thread_count_; i++) {
-        if (session.trie_sessions[i].node == nullptr) { continue; }
+        if (!session.trie_sessions[i].is_valid()) { continue; }
 
         futures.emplace_back(
             pool_.enqueue([this, &session, offset, i] {
@@ -89,7 +103,7 @@ void MultiTrieFilter::collect(MultiTrieFilterSession& session) {
             })
         );
 
-        offset += session.trie_sessions[i].node->word_count;
+        offset += session.trie_sessions[i].valid_node->word_count;
     }
 
     ThreadPool::await_futures(futures);

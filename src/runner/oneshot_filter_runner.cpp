@@ -30,10 +30,15 @@ void OneShotFilterRunner::run() {
 
     // run filter
     t.restart();
-    filter->filter(session, config_.prefix);
+    filter->push_filter(session, config_.prefix);
     filter->collect(session);
     t.stop();
     log_info("Running Filter: %i us\n", t.elapsed_us().count());
+
+    t.restart();
+    filter->collect(session);
+    t.stop();
+    log_info("Collecting results: %i us\n", t.elapsed_us().count());
 
     writer_->write_lines(session.filtered_);
 }

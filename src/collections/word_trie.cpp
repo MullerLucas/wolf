@@ -8,7 +8,6 @@ namespace wolf {
 
 WordTrie::WordTrie() {
     root_ = new WordTrieNode();
-    root_->key = '\0';
 }
 
 WordTrie::~WordTrie() {
@@ -17,8 +16,8 @@ WordTrie::~WordTrie() {
 
 WordTrieSession WordTrie::create_session() const {
     return WordTrieSession {
-        .prefix = "",
-        .node    = root_
+        .valid_prefix = "",
+        .valid_node    = root_
     };
 }
 
@@ -36,6 +35,7 @@ void WordTrie::insert(const std::string& word) {
     for (char ch : word) {
         if (curr->children.find(ch) == curr->children.end()) {
             curr->children[ch] = new WordTrieNode();
+            curr->children[ch]->parent = curr;
         }
         curr->word_count += 1;
         curr = curr->children[ch];
@@ -51,15 +51,36 @@ void WordTrie::clear() {
     });
 }
 
-void WordTrie::filter(WordTrieSession* session, const std::string& prefix) const {
-    session->prefix += prefix;
-    session->node = find(session->node, prefix);
+void WordTrie::push_filter(WordTrieSession* session, const std::string& prefix) const {
+    const auto session_is_valid = session->is_valid();
+    session->depth += prefix.size();
+
+    if (!session_is_valid) { return; }
+
+    const auto tmp = find(session->valid_node, prefix);
+    // if the search failed, record the new depth but don't change the valid node
+    if (tmp == nullptr) { return; }
+
+    session->valid_prefix += prefix;
+    session->valid_node = tmp;
+}
+
+void WordTrie::pop_filter(WordTrieSession* session, usize count) const {
+    if (session->depth == 0) { return; }
+
+    count = std::min(count, session->depth);
+    session->depth -= count;
+
+    const usize size = session->valid_prefix.size();
+    for (usize i = session->depth; i < size; i++) {
+        session->valid_prefix.pop_back();
+        session->valid_node = session->valid_node->parent;
+    }
 }
 
 void WordTrie::collect(WordTrieSession* session, std::vector<const std::string*>& collector, usize offset) const {
-    if (session->node) {
-        collect_words_rec(session, session->node, collector, offset);
-    }
+    if (!session->is_valid()) { return; }
+    collect_words_rec(session, session->valid_node, collector, offset);
 }
 
 const WordTrieNode* WordTrie::find(const WordTrieNode* node, const std::string& prefix) const {
@@ -75,12 +96,9 @@ const WordTrieNode* WordTrie::find(const WordTrieNode* node, const std::string& 
     return curr;
 }
 
-void WordTrie::collect_words_rec(
-    WordTrieSession* session,
-    const WordTrieNode* node,
-    std::vector<const std::string*>& collector,
-    usize& offset
-) const {
+void WordTrie::collect_words_rec(WordTrieSession* session, const WordTrieNode* node,
+                                 std::vector<const std::string*>& collector, usize& offset) const
+{
     if (node->word) {
         collector[offset] = node->word;
         offset += 1;
