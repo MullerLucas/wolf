@@ -11,26 +11,38 @@
 #   pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-glfw
 #
 
-#CXX = g++
-CXX = clang++
+MODE := release
 
-TARGET_DIR := target/debug
 SRC_DIR := src
 IMGUI_DIR := lib/imgui
-
-
-EXE = $(TARGET_DIR)/wolf
-SOURCES = $(SRC_DIR)/main.cpp
-SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
-# remove dir > remove suffix > add .o suffix
-OBJS = $(addprefix $(TARGET_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
-CXXFLAGS += -g -Wall -Wformat
+#CXX = g++
+CXX = clang++
+CXXFLAGS = -std=c++20 -Wall -Wformat -pthread
+CXXFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
+
+ifeq ($(MODE), debug)
+	CXXFLAGS += -Og -g
+	TARGET_DIR := target/debug
+endif
+
+ifeq ($(MODE), release)
+	CXXFLAGS += -O3
+	TARGET_DIR := target/release
+endif
+
+EXE = $(TARGET_DIR)/wolf
+
+SOURCES = $(SRC_DIR)/main.cpp
+SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
+SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+
+OBJS = $(addprefix $(TARGET_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
+
 LIBS =
+
 
 ##---------------------------------------------------------------------
 ## BUILD FLAGS PER PLATFORM
@@ -60,7 +72,7 @@ ifeq ($(OS), Windows_NT)
 	LIBS += -lglfw3 -lgdi32 -lopengl32 -limm32 -lpthread
 
 	# 1. use gnu instead of msvc
-	# 2. fix incompatibility between clang and gcc
+	# 2. fix incompatibility between clang and gnu
 	CXXFLAGS += -target x86_64-pc-windows-gnu -femulated-tls
 	CXXFLAGS += `pkg-config --cflags glfw3`
 	CFLAGS = $(CXXFLAGS)

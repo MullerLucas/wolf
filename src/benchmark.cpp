@@ -81,7 +81,7 @@ void Benchmark::run_any(
 
             writer_
             << "Pre: "  << p
-            << " Ttr: " << nt
+            << " Thr: " << nt
             << " All: " << best_total_time
             << " Con: " << best_construct_time
             << " Ses: " << best_session_time
