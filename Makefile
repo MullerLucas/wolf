@@ -11,8 +11,10 @@
 #   pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-glfw
 #
 
-MODE := debug
+MODE := release
 
+TARGET_DIR := bin
+OBJ_DIR := .cache/wolf
 SRC_DIR := src
 IMGUI_DIR := lib/imgui
 UNAME_S := $(shell uname -s)
@@ -25,12 +27,10 @@ CXXFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 
 ifeq ($(MODE), debug)
 	CXXFLAGS += -Og -g
-	TARGET_DIR := target/debug
 endif
 
 ifeq ($(MODE), release)
 	CXXFLAGS += -O3
-	TARGET_DIR := target/release
 endif
 
 EXE = $(TARGET_DIR)/wolf
@@ -39,7 +39,7 @@ SOURCES = $(SRC_DIR)/main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 
-OBJS = $(addprefix $(TARGET_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
+OBJS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 
 LIBS =
 
@@ -82,19 +82,19 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-$(TARGET_DIR)/%.o:$(SRC_DIR)/%.cpp | $(TARGET_DIR)
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(TARGET_DIR)/%.o:$(IMGUI_DIR)/%.cpp | $(TARGET_DIR)
+$(OBJ_DIR)/%.o:$(IMGUI_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(TARGET_DIR)/%.o:$(IMGUI_DIR)/backends/%.cpp | $(TARGET_DIR)
+$(OBJ_DIR)/%.o:$(IMGUI_DIR)/backends/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
-$(EXE): $(OBJS)
+$(EXE): $(OBJS) | $(TARGET_DIR)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 clean:
@@ -102,3 +102,6 @@ clean:
 
 $(TARGET_DIR):
 	mkdir -p $(TARGET_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)

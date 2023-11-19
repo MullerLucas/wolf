@@ -103,7 +103,8 @@ void FilterWindow::create()
 
     // Setup fonts
     {
-        constexpr float FONT_SIZE_BIG = 32.0f * 1.2f;
+        constexpr float FONT_SIZE_BIG   = 32.0f * 1.2f;
+        constexpr float FONT_SIZE_SMALL = 32.0f * 0.8f;
 
         io.Fonts->AddFontDefault();
         font_norm_reg_ = io.Fonts->AddFontFromFileTTF("assets/fonts/open_sans/static/OpenSans-Regular.ttf", font_size_);
@@ -112,6 +113,8 @@ void FilterWindow::create()
         IM_ASSERT(font_norm_bold_ != nullptr);
         font_big_bold_ = io.Fonts->AddFontFromFileTTF("assets/fonts/open_sans/static/OpenSans-Bold.ttf", FONT_SIZE_BIG);
         IM_ASSERT(font_big_bold_ != nullptr);
+        font_small_reg_ = io.Fonts->AddFontFromFileTTF("assets/fonts/open_sans/static/OpenSans-Regular.ttf", FONT_SIZE_SMALL);
+        IM_ASSERT(font_small_reg_ != nullptr);
     }
 }
 
@@ -149,6 +152,8 @@ void FilterWindow::draw_frame()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window_);
+
+    ++curr_frame_;
 }
 
 void FilterWindow::draw_filter_window()
@@ -171,6 +176,15 @@ void FilterWindow::draw_filter_window()
                 ImGui::PopFont();
             }
 
+            // input text
+            {
+                ImGui::PushFont(font_small_reg_);
+                ImGui::Text("Enter a word to filter the list with.");
+                ImGui::PopFont();
+            }
+
+            ImGui::Spacing();
+
             // input field
             {
                 constexpr auto FLAGS = ImGuiInputTextFlags_NoUndoRedo | ImGuiInputTextFlags_CallbackEdit;
@@ -186,6 +200,9 @@ void FilterWindow::draw_filter_window()
                     return 0;
                 };
 
+                if (curr_frame_ == 0) {
+                    ImGui::SetKeyboardFocusHere(0);
+                }
                 ImGui::SetNextItemWidth(-1);
                 ImGui::InputText("Input", state_->input_buff_, IM_ARRAYSIZE(state_->input_buff_), FLAGS, cb, this);
             }
@@ -200,12 +217,28 @@ void FilterWindow::draw_filter_window()
 
         // preview section
         {
-            // preview list
+            // preview label
             {
-                ImGui::PushFont(font_norm_bold_);
+                ImGui::PushFont(font_big_bold_);
                 ImGui::Text("Preview");
                 ImGui::PopFont();
+            }
 
+            // stats text
+            {
+                ImGui::PushFont(font_small_reg_);
+                ImGui::Text("Displaying");
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->preview_word_count_count);
+                ImGui::SameLine(); ImGui::Text("out of");
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
+                ImGui::SameLine(); ImGui::Text("words.");
+                ImGui::PopFont();
+            }
+
+            ImGui::Spacing();
+
+            // preview list
+            {
                 constexpr usize LIST_HEIGHT = 10;
                 if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, LIST_HEIGHT * ImGui::GetTextLineHeightWithSpacing())))
                 {
@@ -221,7 +254,7 @@ void FilterWindow::draw_filter_window()
             // print button
             {
                 ImGui::SetNextItemWidth(-1);
-                if (ImGui::Button("Print & Exit")) {
+                if (ImGui::Button(" Print & Exit ")) {
                     if (print_clicked_handler != nullptr) {
                         print_clicked_handler();
                     }
@@ -247,14 +280,18 @@ void FilterWindow::draw_filter_window()
 
             // stats text
             {
+                ImGui::PushFont(font_small_reg_);
                 ImGui::Text("From");
                 ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->prev_word_count);
                 ImGui::SameLine(); ImGui::Text("words, to");
                 ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
                 ImGui::SameLine(); ImGui::Text("words, in");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us_.front());
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us_.back());
                 ImGui::SameLine(); ImGui::Text("us!");
+                ImGui::PopFont();
             }
+
+            ImGui::Spacing();
 
             // chart
             {

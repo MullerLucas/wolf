@@ -21,7 +21,7 @@ private:
     std::vector<std::string>    input_;
     FilterWindow                window_;
     FilterWindowState           state_;
-    bool                        should_close_ = false;
+    bool                        should_close_   = false;
 
     bool handle_input_changed(const char* input);
 };

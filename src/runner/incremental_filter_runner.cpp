@@ -12,9 +12,8 @@ namespace wolf {
 // ----------------------------------------------
 
 IncrementalFilterRunner::IncrementalFilterRunner(const Config& config)
-    : Runner(config), window_("hell-app", 640, 730, 32.0f)
-{
-}
+    : Runner(config), window_("hell-app", 640, 800, 32.0f)
+{ }
 
 void IncrementalFilterRunner::run()
 {
@@ -70,14 +69,16 @@ void IncrementalFilterRunner::run()
         {
             state_.prev_word_count = state_.curr_word_count;
             state_.curr_word_count = session.filtered_.size();
+            state_.preview_word_count_count = std::min(state_.curr_word_count,
+                                                       FilterWindowState::MAX_PREVIEW_WORD_COUNT);
 
             state_.max_timing_us_ = *std::max_element(state_.timings_us_.begin(), state_.timings_us_.end());
             state_.timings_us_.erase(state_.timings_us_.begin());
             state_.timings_us_.push_back(total_dur_us);
 
             state_.words_.clear();
-            for (const auto& f : session.filtered_) {
-                state_.words_.push_back(f->c_str());
+            for (int i = 0; i < state_.preview_word_count_count; i++) {
+                state_.words_.push_back(session.filtered_[i]->c_str());
             }
         }
 
