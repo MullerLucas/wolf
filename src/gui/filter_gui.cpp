@@ -30,9 +30,6 @@
 #endif
 
 #include "../utils.h"
-const usize WINDOW_WIDTH = 1280;
-const usize WINDOW_HEIGHT = 720;
-const char* WINDOW_TITLE = "hell-app";
 
 
 static void glfw_error_callback(int error, const char* description)
@@ -41,7 +38,7 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 // Main code
-int wolf::FilterGui::render()
+int wolf::FilterGui::setup()
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -71,10 +68,10 @@ int wolf::FilterGui::render()
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr);
-    if (window == nullptr)
+    window_ = glfwCreateWindow(WINDOW_WIDTH_, WINDOW_HEIGHT_, WINDOW_TITLE_, nullptr, nullptr);
+    if (window_ == nullptr)
         return 1;
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window_);
     glfwSwapInterval(1); // Enable vsync
 
     // Setup Dear ImGui context
@@ -89,14 +86,15 @@ int wolf::FilterGui::render()
     //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Our state
-    bool show_demo_window = false;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    return 0;
+}
+
+int wolf::FilterGui::render()
+{
     // Main loop
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
@@ -104,7 +102,7 @@ int wolf::FilterGui::render()
     io.IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window_))
 #endif
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -127,26 +125,49 @@ int wolf::FilterGui::render()
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH, WINDOW_HEIGHT)); // Set the window size as per your OpenGL window
+            ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH_, WINDOW_HEIGHT_)); // Set the window size as per your OpenGL window
 
             ImGui::Begin("Filter-Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             {
-                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+                // demo
+                {
+                    ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+                }
+
+                // input
+                {
+                    static char buf1[64];
+                    ImGui::InputText("Input", buf1, IM_ARRAYSIZE(buf1), ImGuiInputTextFlags_NoUndoRedo);
+
+                    log_info("TEST: %s\n", buf1);
+                }
+
+                // list
+                {
+                    const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
+                    static int item_current_idx = 0; // Here we store our selection data as an index.
+
+                    ImGui::Text("Full-width:");
+                    if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 15 * ImGui::GetTextLineHeightWithSpacing())))
+                    {
+                        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                        {
+                            const bool is_selected = (item_current_idx == n);
+                            if (ImGui::Selectable(items[n], is_selected))
+                                item_current_idx = n;
+
+                            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                            if (is_selected)
+                                ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndListBox();
+                    }
+                }
 
                 {
-                    static ImGuiTextFilter filter;
-                    ImGui::Text("Filter usage:\n"
-                        "  \"\"         display all lines\n"
-                        "  \"xxx\"      display lines containing \"xxx\"\n"
-                        "  \"xxx,yyy\"  display lines containing \"xxx\" or \"yyy\"\n"
-                        "  \"-xxx\"     hide lines containing \"xxx\"");
-                    filter.Draw();
-                    const char* lines[] = { "aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.h", "hello, world" };
-                    for (int i = 0; i < IM_ARRAYSIZE(lines); i++) {
-                        if (filter.PassFilter(lines[i])) {
-                            ImGui::BulletText("%s", lines[i]);
-                        }
-                    }
+                    static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
+                    ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
+                    ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
                 }
             }
             ImGui::End();
@@ -165,24 +186,30 @@ int wolf::FilterGui::render()
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glfwGetFramebufferSize(window_, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window_);
     }
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
+
+    return 0;
+}
+
+int wolf::FilterGui::shutdown()
+{
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window_);
     glfwTerminate();
 
     return 0;

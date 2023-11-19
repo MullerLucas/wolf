@@ -26,7 +26,10 @@ using namespace wolf;
 // ----------------------------------------------
 
 int main(int argc, char** argv) {
-    FilterGui::render();
+    auto gui = FilterGui();
+    gui.setup();
+    gui.render();
+    gui.shutdown();
 
     // parse config
     Config config = config_from_args(argv + 1, argv + argc);
