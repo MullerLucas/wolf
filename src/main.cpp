@@ -16,15 +16,17 @@
 #include "testing.cpp"
 #include "utils.cpp"
 
-#include "gui/demo_gui.h"
-#include "gui/demo_gui.cpp"
+// #include "gui/demo_gui.h"
+// #include "gui/demo_gui.cpp"
+#include "gui/filter_gui.h"
+#include "gui/filter_gui.cpp"
 
 using namespace wolf;
 
 // ----------------------------------------------
 
 int main(int argc, char** argv) {
-    DemoGui::render();
+    FilterGui::render();
 
     // parse config
     Config config = config_from_args(argv + 1, argv + argc);
