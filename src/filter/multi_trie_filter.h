@@ -15,6 +15,7 @@ namespace wolf {
 struct MultiTrieFilterSession {
     std::vector<const std::string*> filtered_;
     std::vector<WordTrieSession>    trie_sessions;
+    usize                           depth = 0;
 };
 
 // ----------------------------------------------

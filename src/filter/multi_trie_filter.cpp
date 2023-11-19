@@ -54,6 +54,9 @@ void MultiTrieFilter::insert_all(const std::vector<std::string>& unfiltered) {
 }
 
 void MultiTrieFilter::push_filter(MultiTrieFilterSession& session, const std::string& prefix) {
+    if (prefix.empty()) { return; }
+    ++session.depth;
+
     auto futures = ThreadPool::create_futures(thread_count_);
 
     for (usize i = 0; i < thread_count_; i++) {
@@ -69,6 +72,8 @@ void MultiTrieFilter::push_filter(MultiTrieFilterSession& session, const std::st
 
 void MultiTrieFilter::pop_filter(MultiTrieFilterSession& session, usize count) {
     auto futures = ThreadPool::create_futures(thread_count_);
+
+    session.depth = count > session.depth ? 0 : session.depth - count;
 
     for (usize i = 0; i < thread_count_; i++) {
         futures.emplace_back(

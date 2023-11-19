@@ -11,7 +11,7 @@
 #   pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-glfw
 #
 
-MODE := release
+MODE := debug
 
 SRC_DIR := src
 IMGUI_DIR := lib/imgui

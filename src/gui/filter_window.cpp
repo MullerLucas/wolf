@@ -41,7 +41,8 @@ FilterWindow::FilterWindow(const char* title, usize width, usize height, float f
     : title_(title), width_(width), height_(height), font_size_(font_size)
 { }
 
-inline bool FilterWindow::should_close() const {
+inline bool FilterWindow::should_close() const
+{
     return glfwWindowShouldClose(window_);
 }
 
@@ -84,13 +85,13 @@ void FilterWindow::create()
 
     glfwMakeContextCurrent(window_);
     glfwSwapInterval(1); // Enable vsync
+    glfwSetWindowSizeLimits(window_, width_, height_, width_, height_);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -102,7 +103,7 @@ void FilterWindow::create()
 
     // Setup fonts
     {
-        constexpr float FONT_SIZE_BIG = 32.0f * 1.25f;
+        constexpr float FONT_SIZE_BIG = 32.0f * 1.2f;
 
         io.Fonts->AddFontDefault();
         font_norm_reg_ = io.Fonts->AddFontFromFileTTF("assets/fonts/open_sans/static/OpenSans-Regular.ttf", font_size_);
@@ -124,7 +125,7 @@ void FilterWindow::destroy()
     glfwTerminate();
 }
 
-void FilterWindow::draw()
+void FilterWindow::draw_frame()
 {
     glfwPollEvents();
 
@@ -135,12 +136,7 @@ void FilterWindow::draw()
 
     ImGui::PushFont(font_norm_reg_);
 
-    // TODO (lm): remove
-    // demo window
-    if (show_demo_window) {
-        ImGui::ShowDemoWindow(&show_demo_window);
-    }
-
+    // ImGui::ShowDemoWindow(&show_demo_window);
     draw_filter_window();
 
     // Rendering
@@ -153,7 +149,6 @@ void FilterWindow::draw()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window_);
-
 }
 
 void FilterWindow::draw_filter_window()
@@ -161,92 +156,114 @@ void FilterWindow::draw_filter_window()
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(width_, height_)); // Set the window size as per your OpenGL window
 
-    ImGui::Begin("Filter-Window", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin("Filter-Window", nullptr,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar |
+                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    // window
     {
-        // header
+        // input section
         {
-            ImGui::PushFont(font_big_bold_);
-            ImGui::Text("Word-List-Filter");
-            ImGui::PopFont();
-        }
-
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        // filter input
-        {
-            static char buf1[64];
-            ImGui::SetNextItemWidth(-1);
-            ImGui::InputText("Input", buf1, IM_ARRAYSIZE(buf1), ImGuiInputTextFlags_NoUndoRedo);
-        }
-
-        // filter preview
-        {
-            const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
-            static int item_current_idx = 0; // Here we store our selection data as an index.
-
-            ImGui::PushFont(font_norm_bold_);
-            ImGui::Text("Preview");
-            ImGui::PopFont();
-
-            constexpr usize LIST_HEIGHT = 10;
-            if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, LIST_HEIGHT * ImGui::GetTextLineHeightWithSpacing())))
+            // input label
             {
-                for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                ImGui::PushFont(font_big_bold_);
+                ImGui::Text("Input");
+                ImGui::PopFont();
+            }
+
+            // input field
+            {
+                constexpr auto FLAGS = ImGuiInputTextFlags_NoUndoRedo | ImGuiInputTextFlags_CallbackEdit;
+
+                auto cb = [](ImGuiInputTextCallbackData* data) -> int {
+                    FilterWindow* self = (FilterWindow*)data->UserData;
+
+                    if (data->EventFlag == ImGuiInputTextFlags_CallbackEdit) {
+                        if (self->input_changed_handler_ != nullptr) {
+                            (void)self->input_changed_handler_(data->Buf);
+                        }
+                    }
+                    return 0;
+                };
+
+                ImGui::SetNextItemWidth(-1);
+                ImGui::InputText("Input", state_->input_buff_, IM_ARRAYSIZE(state_->input_buff_), FLAGS, cb, this);
+            }
+        }
+
+        // separator
+        {
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+        }
+
+        // preview section
+        {
+            // preview list
+            {
+                ImGui::PushFont(font_norm_bold_);
+                ImGui::Text("Preview");
+                ImGui::PopFont();
+
+                constexpr usize LIST_HEIGHT = 10;
+                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, LIST_HEIGHT * ImGui::GetTextLineHeightWithSpacing())))
                 {
-                    const bool is_selected = (item_current_idx == n);
-                    if (ImGui::Selectable(items[n], is_selected))
-                        item_current_idx = n;
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
+                    for (const auto& word : state_->words_) {
+                        (void)ImGui::Selectable(word, false);
+                    }
+                    ImGui::EndListBox();
                 }
-                ImGui::EndListBox();
             }
-        }
 
-        ImGui::Spacing();
+            ImGui::Spacing();
 
-        // buttons
-        {
-            ImGui::SetNextItemWidth(-1);
-            if (ImGui::Button("Print")) {
-                log_info("Print");
-            }
-        }
-
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        // filter stats
-        {
-            // filter Info
+            // print button
             {
-                ImGui::Text("Filtered");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "123");
+                ImGui::SetNextItemWidth(-1);
+                if (ImGui::Button("Print & Exit")) {
+                    if (print_clicked_handler != nullptr) {
+                        print_clicked_handler();
+                    }
+                }
+            }
+        }
+
+        // separator
+        {
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+        }
+
+        // stats section
+        {
+            // stats label
+            {
+                ImGui::PushFont(font_big_bold_);
+                ImGui::Text("Stats");
+                ImGui::PopFont();
+            }
+
+            // stats text
+            {
+                ImGui::Text("From");
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->prev_word_count);
+                ImGui::SameLine(); ImGui::Text("words, to");
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
                 ImGui::SameLine(); ImGui::Text("words, in");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "123");
-                ImGui::SameLine(); ImGui::Text("seconds!");
+                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us_.front());
+                ImGui::SameLine(); ImGui::Text("us!");
             }
 
-            // charts
+            // chart
             {
-                static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
-                // ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
-                ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80.0f));
+                ImGui::SetNextItemWidth(-1);
+                ImGui::PlotHistogram("Histogram", state_->timings_us_.data(),
+                                     state_->timings_us_.size(), 0, NULL, 0.0f,
+                                     state_->max_timing_us_ * 1.1f, ImVec2(0, 80.0f));
             }
         }
-
-        // demo
-        {
-            ImGui::PushFont(font_norm_bold_);
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::PopFont();
-        }
-
     }
 
     ImGui::PopFont();
@@ -255,5 +272,17 @@ void FilterWindow::draw_filter_window()
 }
 
 // ----------------------------------------------
+
+void FilterWindow::set_input_changed_handler(FilterWindow::InputChangedHandler handler) {
+    input_changed_handler_ = handler;
+}
+
+void FilterWindow::set_print_clicked_handler(FilterWindow::PrintClickedHandler handler) {
+    print_clicked_handler = handler;
+}
+
+void FilterWindow::set_state(FilterWindowState* state) {
+    state_ = state;
+}
 
 }
