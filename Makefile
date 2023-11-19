@@ -28,7 +28,7 @@ OBJS = $(addprefix $(TARGET_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-CXXFLAGS = -target x86_64-pc-windows-gnu -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
+CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
 
@@ -59,8 +59,9 @@ ifeq ($(OS), Windows_NT)
 	ECHO_MESSAGE = "MinGW"
 	LIBS += -lglfw3 -lgdi32 -lopengl32 -limm32 -lpthread
 
-	# fix incompatibility between clang and gcc
-	CXXFLAGS += -femulated-tls
+	# 1. use gnu instead of msvc
+	# 2. fix incompatibility between clang and gcc
+	CXXFLAGS += -target x86_64-pc-windows-gnu -femulated-tls
 	CXXFLAGS += `pkg-config --cflags glfw3`
 	CFLAGS = $(CXXFLAGS)
 endif

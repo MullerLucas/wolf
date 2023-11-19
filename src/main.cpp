@@ -6,31 +6,22 @@
 #include "config.cpp"
 #include "filter/multi_trie_filter.cpp"
 #include "filter/simple_vector_filter.cpp"
+#include "gui/filter_window.cpp"
 #include "io/reader.cpp"
 #include "io/writer.cpp"
 #include "runner/benchmark_runner.cpp"
-#include "runner/oneshot_filter_runner.cpp"
-#include "runner/incremental_filter_runner.cpp"
-#include "runner/runner.cpp"
 #include "runner/generator_runner.cpp"
+#include "runner/incremental_filter_runner.cpp"
+#include "runner/oneshot_filter_runner.cpp"
+#include "runner/runner.cpp"
 #include "testing.cpp"
 #include "utils.cpp"
-
-// #include "gui/demo_gui.h"
-// #include "gui/demo_gui.cpp"
-#include "gui/filter_gui.h"
-#include "gui/filter_gui.cpp"
 
 using namespace wolf;
 
 // ----------------------------------------------
 
 int main(int argc, char** argv) {
-    auto gui = FilterGui();
-    gui.setup();
-    gui.render();
-    gui.shutdown();
-
     // parse config
     Config config = config_from_args(argv + 1, argv + argc);
     if (config.is_verbose) {
