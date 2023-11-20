@@ -12,6 +12,8 @@
 
 namespace wolf {
 
+// -------------------------------------------
+
 Benchmark::Benchmark(Writer &writer, const std::vector<std::string> &input,
                      const std::vector<std::string> &prefixes,
                      std::vector<usize> thread_count, usize iterations)
@@ -174,5 +176,7 @@ BenchResult Benchmark::run_trie_filter(const std::vector<std::string> &input,
 
     return result;
 }
+
+// -------------------------------------------
 
 }

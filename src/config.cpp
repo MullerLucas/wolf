@@ -112,7 +112,7 @@ void log_help()
     << "Options:\n"
     << "  -m, --mode         Run Mode\n"
     << "                     fos <prefix>         : filter: one-shot\n"
-    << "                     fin                  : filter: incremental\n"
+    << "                     fin                  : filter: interactive\n"
     << "                     gen <width> <suffle> : generate test data\n"
     << "                     bench <iter>         : benchmark\n"
     << "  -h, --help         Show help\n"
@@ -120,7 +120,6 @@ void log_help()
     << "  -o, --output       Output file\n"
     << "  -p, --prefix       Prefix\n"
     << "  -t, --threads      Number of threads\n"
-    << "  -i, --incremental  Incremental filter\n"
     << "  -s, --shuffle      Shuffle test data\n"
     << "  -v, --verbose      Verbose\n";
 }
