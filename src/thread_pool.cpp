@@ -1,5 +1,3 @@
-#pragma once
-
 #include "utils.h"
 #include "thread_pool.h"
 

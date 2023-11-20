@@ -1,5 +1,3 @@
-#pragma once
-
 #include "generator_runner.h"
 #include "../testing.h"
 

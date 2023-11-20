@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string>
 #include <vector>
 
@@ -21,8 +19,8 @@ void BenchmarkRunner::run()
     Benchmark bench(
         *writer_,
         input,
-        { "A", "BC", "CAB", "ABCD", "ABCDE" },
-        { 1, 2, 4, 8, 12, 16, 32, 48 },
+        { "A", "BC", "CAB", "ABCD", "ABCDE", "ABCDEF" },
+        { 1, 2, 4, 8, 12, 16, 32, 48, 64 },
         config_->bench_iters
     );
     bench.run();
