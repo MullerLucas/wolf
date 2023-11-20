@@ -10,11 +10,12 @@ namespace wolf {
 
 // ----------------------------------------------
 
-BenchmarkRunner::BenchmarkRunner(const Config& config)
+BenchmarkRunner::BenchmarkRunner(const Config *config)
     : Runner(config)
 { }
 
-void BenchmarkRunner::run() {
+void BenchmarkRunner::run()
+{
     const auto input = read_word_list();
 
     Benchmark bench(

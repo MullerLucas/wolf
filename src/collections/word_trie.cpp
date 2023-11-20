@@ -6,31 +6,34 @@ namespace wolf {
 
 // ----------------------------------------------
 
-WordTrie::WordTrie() {
+WordTrie::WordTrie()
+{
     root_ = new WordTrieNode();
 }
 
-WordTrie::~WordTrie() {
+WordTrie::~WordTrie()
+{
     clear();
 }
 
-WordTrieSession WordTrie::create_session() const {
-    return WordTrieSession {
+WTSession WordTrie::create_session() const
+{
+    return WTSession {
         .valid_prefix = "",
-        .valid_node    = root_
+        .valid_node = root_
     };
 }
 
-// NOTE(lm): assumes words are not already in trie (no duplicates)
-void WordTrie::insert_all(const std::string* first, const std::string* last) {
-    for (; first != last; ++first) {
+void WordTrie::insert_all(const std::string *first, const std::string *last)
+{
+    for (; first != last; ++first)
         (void)insert(*first);
-    }
 }
 
 // NOTE(lm): assumes word is not already in trie (no duplicates)
-void WordTrie::insert(const std::string& word) {
-    WordTrieNode* curr = root_;
+void WordTrie::insert(const std::string &word)
+{
+    WordTrieNode *curr = root_;
 
     for (char ch : word) {
         if (curr->children.find(ch) == curr->children.end()) {
@@ -45,28 +48,32 @@ void WordTrie::insert(const std::string& word) {
     curr->word = &word;
 }
 
-void WordTrie::clear() {
-    traverse_nodes_postorder(root_, [](WordTrieNode* node) {
+void WordTrie::clear()
+{
+    traverse_postorder(root_, [](WordTrieNode* node) {
         delete node;
     });
 }
 
-void WordTrie::push_filter(WordTrieSession* session, const std::string& prefix) const {
+void WordTrie::push(WTSession *session, const std::string &prefix) const
+{
     const auto session_is_valid = session->is_valid();
     session->depth += prefix.size();
 
-    if (!session_is_valid) { return; }
+    if (!session_is_valid) return;
 
     const auto tmp = find(session->valid_node, prefix);
-    // if the search failed, record the new depth but don't change the valid node
-    if (tmp == nullptr) { return; }
+    // NOTE(lm): if the search failed, record the new depth but don't change
+    //           the valid node
+    if (tmp == nullptr) return;
 
     session->valid_prefix += prefix;
     session->valid_node = tmp;
 }
 
-void WordTrie::pop_filter(WordTrieSession* session, usize count) const {
-    if (session->depth == 0) { return; }
+void WordTrie::pop(WTSession *session, usize count) const
+{
+    if (session->depth == 0) return;
 
     count = std::min(count, session->depth);
     session->depth -= count;
@@ -78,41 +85,46 @@ void WordTrie::pop_filter(WordTrieSession* session, usize count) const {
     }
 }
 
-void WordTrie::collect(WordTrieSession* session, std::vector<const std::string*>& collector, usize offset) const {
-    if (!session->is_valid()) { return; }
-    collect_words_rec(session, session->valid_node, collector, offset);
+void WordTrie::collect(WTSession *session,
+                       std::vector<const std::string*> &collector,
+                       usize offset) const
+{
+    if (!session->is_valid()) return;
+    collect_rec(session, session->valid_node, collector, offset);
 }
 
-const WordTrieNode* WordTrie::find(const WordTrieNode* node, const std::string& prefix) const {
-    const WordTrieNode* curr = node;
+const WordTrieNode *WordTrie::find(const WordTrieNode *node,
+                                   const std::string &prefix) const
+{
+    const WordTrieNode *curr = node;
 
     for (char ch : prefix) {
-        if (curr->children.find(ch) == curr->children.end()) {
+        if (curr->children.find(ch) == curr->children.end())
             return nullptr;
-        }
         curr = curr->children.at(ch);
     }
 
     return curr;
 }
 
-void WordTrie::collect_words_rec(WordTrieSession* session, const WordTrieNode* node,
-                                 std::vector<const std::string*>& collector, usize& offset) const
+void WordTrie::collect_rec(WTSession *session, const WordTrieNode *node,
+                           std::vector<const std::string*> &collector,
+                           usize &offset) const
 {
     if (node->word) {
         collector[offset] = node->word;
         offset += 1;
     }
 
-    for (const auto& [key, child] : node->children) {
-        collect_words_rec(session, child, collector, offset);
-    }
+    for (const auto& [key, child] : node->children)
+        collect_rec(session, child, collector, offset);
 }
 
-void WordTrie::traverse_nodes_postorder(WordTrieNode* node, std::function<void(WordTrieNode*)> cb) {
-    for (const auto& [key, child] : node->children) {
-        traverse_nodes_postorder(child, cb);
-    }
+void WordTrie::traverse_postorder(WordTrieNode *node,
+                                  std::function<void(WordTrieNode*)> cb)
+{
+    for (const auto& [key, child] : node->children)
+        traverse_postorder(child, cb);
     cb(node);
 }
 

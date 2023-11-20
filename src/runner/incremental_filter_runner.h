@@ -13,7 +13,7 @@ namespace wolf {
 
 class IncrementalFilterRunner : public Runner {
 public:
-    IncrementalFilterRunner(const Config& config);
+    IncrementalFilterRunner(const Config *config);
 
     void run() override;
 
@@ -23,7 +23,7 @@ private:
     FilterWindowState           state_;
     bool                        should_close_   = false;
 
-    bool handle_input_changed(const char* input);
+    bool handle_input_changed(const char *input);
 };
 
 // ----------------------------------------------

@@ -12,14 +12,16 @@ namespace wolf {
 
 // ----------------------------------------------
 
-void log(const char* format, ...) {
+void log(const char *format, ...)
+{
     va_list args;
     va_start(args, format);
     vfprintf(stderr, format, args);
     va_end(args);
 }
 
-void log_info(const char* format, ...) {
+void log_info(const char *format, ...)
+{
     fprintf(stderr, "[INFO]: ");
 
     va_list args;
@@ -28,39 +30,41 @@ void log_info(const char* format, ...) {
     va_end(args);
 }
 
-b8 string_starts_with(const std::string& str, const std::string& prefix, usize offset) {
-    if (prefix.size() > str.size()) {
+b8 string_starts_with(const std::string &str, const std::string &prefix, usize offset)
+{
+    if (prefix.size() > str.size())
         return false;
-    }
 
-    for (usize i = offset; i < prefix.size(); i++) {
-        if (str[i] != prefix[i]) {
-            return false;
-        }
-    }
+    for (usize i = offset; i < prefix.size(); i++)
+        if (str[i] != prefix[i]) return false;
 
     return true;
 }
 
 // ----------------------------------------------
 
-Timer::Timer() : start_time_(std::chrono::high_resolution_clock::now()), end_time_(start_time_)
+Timer::Timer()
+    : start_time_(std::chrono::high_resolution_clock::now()), end_time_(start_time_)
 {}
 
-void Timer::restart() {
+void Timer::restart()
+{
     start_time_ = std::chrono::high_resolution_clock::now();
-    end_time_   = start_time_;
+    end_time_ = start_time_;
 }
 
-void Timer::stop() {
+void Timer::stop()
+{
     end_time_ = std::chrono::high_resolution_clock::now();
 }
 
-std::chrono::milliseconds Timer::elapsed_ms() const {
+std::chrono::milliseconds Timer::elapsed_ms() const
+{
     return std::chrono::duration_cast<std::chrono::milliseconds>(end_time_ - start_time_);
 }
 
-std::chrono::microseconds Timer::elapsed_us() const {
+std::chrono::microseconds Timer::elapsed_us() const
+{
     return std::chrono::duration_cast<std::chrono::microseconds>(end_time_ - start_time_);
 }
 

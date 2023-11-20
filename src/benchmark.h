@@ -22,37 +22,28 @@ struct BenchResult {
 
 class Benchmark {
 public:
-    Benchmark(
-        Writer& writer,
-        const std::vector<std::string>& input,
-        const std::vector<std::string>& prefixes,
-        std::vector<usize> thread_count,
-        usize iterations
-    );
+    Benchmark(Writer &writer, const std::vector<std::string> &input,
+              const std::vector<std::string> &prefixes,
+              std::vector<usize> thread_count, usize iterations);
 
     void run() const;
 
 private:
-    Writer& writer_;
-    const std::vector<std::string>& input_;
-    std::vector<std::string> prefixes_;
-    std::vector<usize> thread_count_;
-    usize iterations_;
+    Writer                          &writer_;
+    const std::vector<std::string>  &input_;
+    std::vector<std::string>        prefixes_;
+    std::vector<usize>              thread_count_;
+    usize                           iterations_;
 
     void run_any(
-        std::function<BenchResult(const std::vector<std::string>& input, const std::string& prefix, usize thread_count)> fn
+        std::function<BenchResult(const std::vector<std::string> &input,
+                                  const std::string &prefix, usize thread_count)> fn
     ) const;
 
-    static BenchResult run_vector_filter(
-        const std::vector<std::string>& input,
-        const std::string& prefix,
-        usize thread_count
-    );
-    static BenchResult run_trie_filter(
-        const std::vector<std::string>& input,
-        const std::string& prefix,
-        usize thread_count
-    );
+    static BenchResult run_vector_filter(const std::vector<std::string> &input,
+                                         const std::string &prefix, usize thread_count);
+    static BenchResult run_trie_filter(const std::vector<std::string>& input,
+                                       const std::string& prefix, usize thread_count);
 };
 
 // ----------------------------------------------

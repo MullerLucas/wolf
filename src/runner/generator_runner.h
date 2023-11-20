@@ -11,7 +11,7 @@ namespace wolf {
 
 class GeneratorRunner : public Runner {
 public:
-    GeneratorRunner(const Config& config);
+    GeneratorRunner(const Config *config);
 
     void run() override;
 

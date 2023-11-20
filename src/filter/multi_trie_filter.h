@@ -12,10 +12,10 @@ namespace wolf {
 
 // ----------------------------------------------
 
-struct MultiTrieFilterSession {
+struct MTFSession {
     std::vector<const std::string*> filtered_;
-    std::vector<WordTrieSession>    trie_sessions;
-    usize                           depth = 0;
+    std::vector<WTSession>          trie_sessions;
+    usize                           depth           = 0;
 };
 
 // ----------------------------------------------
@@ -24,15 +24,15 @@ class MultiTrieFilter {
 public:
     MultiTrieFilter(usize thread_count);
 
-    MultiTrieFilterSession create_session() const;
+    MTFSession create_session() const;
 
-    void insert_all(const std::vector<std::string>& unfiltered);
-    void push_filter(MultiTrieFilterSession& session, const std::string& prefix);
-    void pop_filter(MultiTrieFilterSession& session, usize count);
-    void collect(MultiTrieFilterSession& session);
+    void insert_all(const std::vector<std::string> &unfiltered);
+    void push(MTFSession &session, const std::string &prefix);
+    void pop(MTFSession &session, usize count);
+    void collect(MTFSession &session);
 
 private:
-    const usize MIN_CHUNK_SIZE_ = 1;
+    static constexpr usize MIN_CHUNK_SIZE_ = 1;
 
     usize                   thread_count_;
     ThreadPool              pool_;

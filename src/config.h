@@ -24,8 +24,7 @@ struct Config {
     std::optional<std::string> input_file  = std::nullopt;
     std::optional<std::string> output_file = std::nullopt;
 
-    std::string prefix = "";
-
+    std::string prefix  = "";
     usize thread_count  = std::thread::hardware_concurrency();
     usize gen_width     = 4;
     bool  gen_shuffle   = false;
@@ -33,8 +32,8 @@ struct Config {
     bool  is_verbose    = false;
 };
 
-Config config_from_args(char** first, char** last);
-void   log_config(const Config& config);
+Config config_from_args(char **first, char **last);
+void   log_config(const Config &config);
 void   log_help();
 
 // ----------------------------------------------

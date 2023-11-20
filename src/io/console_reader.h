@@ -4,14 +4,15 @@
 #include <fstream>
 #include <vector>
 
+#include "reader.h"
+
 namespace wolf {
 
 // ----------------------------------------------
 
-class Reader {
+class ConsoleReader: public Reader {
 public:
-    virtual ~Reader() = default;
-    virtual std::vector<std::string> read_lines() = 0;
+    std::vector<std::string> read_lines();
 };
 
 // ----------------------------------------------

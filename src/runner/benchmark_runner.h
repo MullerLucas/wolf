@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include "runner.h"
 
 namespace wolf {
@@ -11,7 +8,7 @@ namespace wolf {
 
 class BenchmarkRunner : public Runner {
 public:
-    BenchmarkRunner(const Config& config);
+    BenchmarkRunner(const Config *config);
 
     void run() override;
 };

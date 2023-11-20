@@ -1,9 +1,3 @@
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
 #include "filter_window.h"
 
 
@@ -18,9 +12,6 @@
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-// [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
-// To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
-// Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -31,13 +22,14 @@ namespace wolf {
 
 // ----------------------------------------------
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
 
-FilterWindow::FilterWindow(const char* title, usize width, usize height, float font_size)
+FilterWindow::FilterWindow(const char *title, usize width, usize height,
+                           float font_size)
     : title_(title), width_(width), height_(height), font_size_(font_size)
 { }
 
@@ -46,31 +38,29 @@ inline bool FilterWindow::should_close() const
     return glfwWindowShouldClose(window_);
 }
 
-// Main code
 void FilterWindow::create()
 {
     glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit()) {
+    if (!glfwInit())
         std::runtime_error("Failed to initialize GLFW!");
-    }
 
     // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
+    const char *glsl_version = "#version 100";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 #elif defined(__APPLE__)
     // GL 3.2 + GLSL 150
-    const char* glsl_version = "#version 150";
+    const char *glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 #else
     // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
+    const char *glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
@@ -79,9 +69,8 @@ void FilterWindow::create()
 
     // Create window with graphics context
     window_ = glfwCreateWindow(width_, height_, title_, nullptr, nullptr);
-    if (window_ == nullptr) {
+    if (window_ == nullptr)
         std::runtime_error("Failed to create GLFW window!");
-    }
 
     glfwMakeContextCurrent(window_);
     glfwSwapInterval(1); // Enable vsync
@@ -147,7 +136,10 @@ void FilterWindow::draw_frame()
     int display_w, display_h;
     glfwGetFramebufferSize(window_, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
-    glClearColor(COLOR_CLEAR_.x * COLOR_CLEAR_.w, COLOR_CLEAR_.y * COLOR_CLEAR_.w, COLOR_CLEAR_.z * COLOR_CLEAR_.w, COLOR_CLEAR_.w);
+    glClearColor(COLOR_CLEAR_.x * COLOR_CLEAR_.w,
+                 COLOR_CLEAR_.y * COLOR_CLEAR_.w,
+                 COLOR_CLEAR_.z * COLOR_CLEAR_.w,
+                 COLOR_CLEAR_.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -159,7 +151,7 @@ void FilterWindow::draw_frame()
 void FilterWindow::draw_filter_window()
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(width_, height_)); // Set the window size as per your OpenGL window
+    ImGui::SetNextWindowSize(ImVec2(width_, height_));
 
     ImGui::Begin("Filter-Window", nullptr,
                  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
@@ -187,7 +179,8 @@ void FilterWindow::draw_filter_window()
 
             // input field
             {
-                constexpr auto FLAGS = ImGuiInputTextFlags_NoUndoRedo | ImGuiInputTextFlags_CallbackEdit;
+                constexpr auto FLAGS = ImGuiInputTextFlags_NoUndoRedo |
+                    ImGuiInputTextFlags_CallbackEdit;
 
                 auto cb = [](ImGuiInputTextCallbackData* data) -> int {
                     FilterWindow* self = (FilterWindow*)data->UserData;
@@ -204,7 +197,9 @@ void FilterWindow::draw_filter_window()
                     ImGui::SetKeyboardFocusHere(0);
                 }
                 ImGui::SetNextItemWidth(-1);
-                ImGui::InputText("Input", state_->input_buff_, IM_ARRAYSIZE(state_->input_buff_), FLAGS, cb, this);
+                ImGui::InputText("Input", state_->input_buff,
+                                 IM_ARRAYSIZE(state_->input_buff), FLAGS, cb,
+                                 this);
             }
         }
 
@@ -228,9 +223,12 @@ void FilterWindow::draw_filter_window()
             {
                 ImGui::PushFont(font_small_reg_);
                 ImGui::Text("Displaying");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->preview_word_count_count);
-                ImGui::SameLine(); ImGui::Text("out of");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
+                ImGui::SameLine();
+                ImGui::TextColored(COLOR_HI_0_, "%zu", state_->view_word_count);
+                ImGui::SameLine();
+                ImGui::Text("out of");
+                ImGui::SameLine();
+                ImGui::TextColored(COLOR_HI_0_, "%zu", state_->curr_word_count);
                 ImGui::SameLine(); ImGui::Text("words.");
                 ImGui::PopFont();
             }
@@ -240,11 +238,9 @@ void FilterWindow::draw_filter_window()
             // preview list
             {
                 constexpr usize LIST_HEIGHT = 10;
-                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, LIST_HEIGHT * ImGui::GetTextLineHeightWithSpacing())))
-                {
-                    for (const auto& word : state_->words_) {
+                if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, LIST_HEIGHT * ImGui::GetTextLineHeightWithSpacing()))) {
+                    for (const auto& word : state_->words)
                         (void)ImGui::Selectable(word, false);
-                    }
                     ImGui::EndListBox();
                 }
             }
@@ -255,9 +251,8 @@ void FilterWindow::draw_filter_window()
             {
                 ImGui::SetNextItemWidth(-1);
                 if (ImGui::Button(" Print & Exit ")) {
-                    if (print_clicked_handler != nullptr) {
+                    if (print_clicked_handler != nullptr)
                         print_clicked_handler();
-                    }
                 }
             }
         }
@@ -282,12 +277,18 @@ void FilterWindow::draw_filter_window()
             {
                 ImGui::PushFont(font_small_reg_);
                 ImGui::Text("From");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->prev_word_count);
-                ImGui::SameLine(); ImGui::Text("words, to");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
-                ImGui::SameLine(); ImGui::Text("words, in");
-                ImGui::SameLine(); ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us_.back());
-                ImGui::SameLine(); ImGui::Text("us!");
+                ImGui::SameLine();
+                ImGui::TextColored(COLOR_HI_0_, "%lu", state_->prev_word_count);
+                ImGui::SameLine();
+                ImGui::Text("words, to");
+                ImGui::SameLine();
+                ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
+                ImGui::SameLine();
+                ImGui::Text("words, in");
+                ImGui::SameLine();
+                ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us.back());
+                ImGui::SameLine();
+                ImGui::Text("us!");
                 ImGui::PopFont();
             }
 
@@ -296,9 +297,10 @@ void FilterWindow::draw_filter_window()
             // chart
             {
                 ImGui::SetNextItemWidth(-1);
-                ImGui::PlotHistogram("Histogram", state_->timings_us_.data(),
-                                     state_->timings_us_.size(), 0, NULL, 0.0f,
-                                     state_->max_timing_us_ * 1.1f, ImVec2(0, 80.0f));
+                ImGui::PlotHistogram("Histogram", state_->timings_us.data(),
+                                     state_->timings_us.size(), 0, NULL, 0.0f,
+                                     state_->max_timing_us * 1.1f,
+                                     ImVec2(0, 80.0f));
             }
         }
     }
@@ -308,18 +310,21 @@ void FilterWindow::draw_filter_window()
 
 }
 
-// ----------------------------------------------
-
-void FilterWindow::set_input_changed_handler(FilterWindow::InputChangedHandler handler) {
+void FilterWindow::set_input_changed_handler(InputChangedHandler handler)
+{
     input_changed_handler_ = handler;
 }
 
-void FilterWindow::set_print_clicked_handler(FilterWindow::PrintClickedHandler handler) {
+void FilterWindow::set_print_clicked_handler(PrintClickedHandler handler)
+{
     print_clicked_handler = handler;
 }
 
-void FilterWindow::set_state(FilterWindowState* state) {
+void FilterWindow::set_state(FilterWindowState *state)
+{
     state_ = state;
 }
+
+// ----------------------------------------------
 
 }

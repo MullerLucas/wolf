@@ -7,7 +7,10 @@
 
 namespace wolf {
 
-static bool compare_options(const char* str, const char* option, ...) {
+// ----------------------------------------------
+
+static bool compare_options(const char *str, const char *option, ...)
+{
     va_list args;
     va_start(args, option);
 
@@ -24,7 +27,8 @@ static bool compare_options(const char* str, const char* option, ...) {
     return false;
 }
 
-Config config_from_args(char** first, char** last) {
+Config config_from_args(char **first, char **last)
+{
     Config config {};
 
     for (; first != last; ++first) {
@@ -86,7 +90,8 @@ Config config_from_args(char** first, char** last) {
     return config;
 }
 
-void log_config(const Config& config) {
+void log_config(const Config &config)
+{
     log_info("Config:\n");
     log_info("  run_mode:     %d\n",  config.run_mode);
     log_info("  input_file:   %s\n",  config.input_file.value_or("nullopt").c_str());
@@ -100,7 +105,8 @@ void log_config(const Config& config) {
     log_info("\n");
 }
 
-void log_help() {
+void log_help()
+{
     std::cout
     << "Usage: wolf [options]\n"
     << "Options:\n"
@@ -118,6 +124,8 @@ void log_help() {
     << "  -s, --shuffle      Shuffle test data\n"
     << "  -v, --verbose      Verbose\n";
 }
+
+// ----------------------------------------------
 
 };
 

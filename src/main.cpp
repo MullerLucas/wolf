@@ -7,7 +7,10 @@
 #include "filter/multi_trie_filter.cpp"
 #include "filter/simple_vector_filter.cpp"
 #include "gui/filter_window.cpp"
-#include "io/reader.cpp"
+#include "io/console_reader.cpp"
+#include "io/console_writer.cpp"
+#include "io/file_reader.cpp"
+#include "io/file_writer.cpp"
 #include "io/writer.cpp"
 #include "runner/benchmark_runner.cpp"
 #include "runner/generator_runner.cpp"
@@ -21,12 +24,12 @@ using namespace wolf;
 
 // ----------------------------------------------
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     // parse config
     Config config = config_from_args(argv + 1, argv + argc);
-    if (config.is_verbose) {
+    if (config.is_verbose)
         log_config(config);
-    }
 
     // show help, if needed
     if (config.run_mode == RunMode::Help) {
@@ -36,7 +39,7 @@ int main(int argc, char** argv) {
 
     // run runners
     {
-        auto runner = Runner::create(config);
+        auto runner = Runner::create(&config);
         runner->run();
     }
 

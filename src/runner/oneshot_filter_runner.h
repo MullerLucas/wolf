@@ -10,7 +10,7 @@ namespace wolf {
 
 class OneShotFilterRunner : public Runner {
 public:
-    OneShotFilterRunner(const Config& config);
+    OneShotFilterRunner(const Config *config);
 
     void run() override;
 };
