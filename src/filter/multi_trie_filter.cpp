@@ -99,7 +99,7 @@ void MultiTrieFilter::collect(MTFSession &session)
         total_size += ts.valid_node->word_count;
     }
 
-    session.filtered_.resize(total_size);
+    session.filtered_.resize(total_size, 0);
     if (total_size == 0) return;
 
     auto futures = ThreadPool::create_futures(thread_count_);

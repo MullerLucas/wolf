@@ -21,9 +21,9 @@ void BenchmarkRunner::run()
     Benchmark bench(
         *writer_,
         input,
-        { "A", "BC", "CAB", "ABCD" },
+        { "A", "BC", "CAB", "ABCD", "ABCDE" },
         { 1, 2, 4, 8, 12, 16, 32, 48 },
-        10
+        config_->bench_iters
     );
     bench.run();
 }

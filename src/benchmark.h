@@ -11,11 +11,12 @@ namespace wolf {
 // ----------------------------------------------
 
 struct BenchResult {
-    i64 construct_time;
-    i64 session_time;
-    i64 insert_time;
-    i64 filter_time;
-    i64 collect_time;
+    i64 construct_time  = std::numeric_limits<i64>::max();
+    i64 session_time    = std::numeric_limits<i64>::max();
+    i64 insert_time     = std::numeric_limits<i64>::max();
+    i64 filter_time     = std::numeric_limits<i64>::max();
+    i64 collect_time    = std::numeric_limits<i64>::max();
+    i64 destruct_time   = std::numeric_limits<i64>::max();
 };
 
 // ----------------------------------------------

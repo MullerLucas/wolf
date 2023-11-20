@@ -1,5 +1,5 @@
 #include "oneshot_filter_runner.h"
-#include "../filter/multi_trie_filter.h"
+#include "../filter/simple_vector_filter.h"
 #include <stdexcept>
 
 namespace wolf {
@@ -18,21 +18,14 @@ void OneShotFilterRunner::run()
 
     // create filter
     t.restart();
-    auto filter  = std::make_unique<MultiTrieFilter>(config_->thread_count);
-    auto session = filter->create_session();
+    auto filter = std::make_unique<SimpleVectorFilter>(config_->thread_count);
+    auto session = filter->create_session(input);
     t.stop();
     log_info("Create filter: %zu us\n", t.elapsed_us().count());
-
-    // insert data
-    t.restart();
-    filter->insert_all(input);
-    t.stop();
-    log_info("Insert data: %zu us\n", t.elapsed_us().count());
 
     // run filter
     t.restart();
     filter->push(session, config_->prefix);
-    filter->collect(session);
     t.stop();
     log_info("Running Filter: %zu us\n", t.elapsed_us().count());
 
@@ -41,7 +34,7 @@ void OneShotFilterRunner::run()
     t.stop();
     log_info("Collecting results: %zu us\n", t.elapsed_us().count());
 
-    writer_->write_lines(session.filtered_);
+    writer_->write_lines(session.filtered);
 }
 
 // ----------------------------------------------

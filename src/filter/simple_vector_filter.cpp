@@ -14,62 +14,62 @@ namespace wolf {
 // ----------------------------------------------
 
 SimpleVectorFilter::SimpleVectorFilter(usize thread_count)
-    : thread_count_(thread_count), pool_(thread_count), input_(nullptr), prefix_("")
+    : thread_count_(thread_count), pool_(thread_count)
 { }
 
-void SimpleVectorFilter::insert_all(const std::vector<std::string> *input)
+SVFSession SimpleVectorFilter::create_session(const std::vector<std::string> &unfiltered) const
 {
-    this->input_ = input;
+    SVFSession session;
+    session.filtered.clear();
+    session.filtered.reserve(unfiltered.size());
 
-    output_.clear();
-    output_.reserve(input_->size());
+    for (const auto& in : unfiltered)
+        session.filtered.push_back(&in);
 
-    for (const auto& in : *input_)
-        output_.push_back(&in);
+    return session;
 }
 
-void SimpleVectorFilter::push(const std::string &prefix)
+void SimpleVectorFilter::push(SVFSession &session, const std::string &prefix)
 {
-    const usize size = output_.size();
+    const usize size = session.filtered.size();
     const usize num_workloads = thread_count_ * WORKLOAD_MULTIPLIER;
     const usize chunk_size = size / num_workloads;
 
-    const usize offset = prefix_.size();
-    prefix_ += prefix;
+    const usize offset = session.prefix.size();
+    session.prefix += prefix;
 
     auto futures = ThreadPool::create_futures(thread_count_);
 
     for (usize i = 0; i < num_workloads; ++i) {
         const usize start = i * chunk_size;
-        const usize end   = (i == num_workloads - 1) ? size : (i + 1) * chunk_size;
+        const usize end = (i == num_workloads - 1) ? size : (i + 1) * chunk_size;
 
         futures.emplace_back(
-            pool_.enqueue([this, start, end, offset] {
-                process_workload(output_, start, end, prefix_, offset);
+            pool_.enqueue([=, &session] {
+                push_slice(session.filtered, start, end, session.prefix, offset);
             })
         );
     }
 
     ThreadPool::await_futures(futures);
-
-    auto it = std::remove_if(output_.begin(), output_.end(), [](const std::string *str) {
-        return str == nullptr;
-    });
-    output_.erase(it, output_.end());
 }
 
-const std::vector<const std::string*> &SimpleVectorFilter::collect() const
+void SimpleVectorFilter::collect(SVFSession &session) const
 {
-    return output_;
+    auto it = std::remove_if(session.filtered.begin(), session.filtered.end(),
+        [](const std::string *str) {
+            return str == nullptr;
+        });
+    session.filtered.erase(it, session.filtered.end());
 }
 
-void SimpleVectorFilter::process_workload(std::vector<const std::string*> &output,
-                                          usize start, usize end,
-                                          const std::string &prefix, usize offset)
+void SimpleVectorFilter::push_slice(std::vector<const std::string*> &filtered,
+                                    usize start, usize end,
+                                    const std::string &prefix, usize offset)
 {
     for (usize i = start; i < end; ++i) {
-        if (!string_starts_with(*output[i], prefix, offset))
-            output[i] = nullptr;
+        if (filtered[i] != nullptr && !string_starts_with(*filtered[i], prefix, offset))
+            filtered[i] = nullptr;
     }
 }
 
