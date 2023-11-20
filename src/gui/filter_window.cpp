@@ -33,7 +33,7 @@ FilterWindow::FilterWindow(const char *title, usize width, usize height,
     : title_(title), width_(width), height_(height), font_size_(font_size)
 { }
 
-inline bool FilterWindow::should_close() const
+bool FilterWindow::should_close() const
 {
     return glfwWindowShouldClose(window_);
 }

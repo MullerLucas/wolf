@@ -20,7 +20,6 @@ IMGUI_DIR := lib/imgui
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-#CXX = g++
 CXX = clang++
 CXXFLAGS = -std=c++20 -Wall -Wformat -pthread
 CXXFLAGS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
@@ -35,7 +34,17 @@ endif
 
 EXE = $(TARGET_DIR)/wolf
 
-SOURCES = $(SRC_DIR)/main.cpp
+# wolf
+# ----
+SOURCES = $(SRC_DIR)/config.cpp $(SRC_DIR)/testing.cpp $(SRC_DIR)/utils.cpp $(SRC_DIR)/main.cpp $(SRC_DIR)/thread_pool.cpp $(SRC_DIR)/benchmark.cpp
+SOURCES += $(SRC_DIR)/io/console_writer.cpp $(SRC_DIR)/io/writer.cpp $(SRC_DIR)/io/console_reader.cpp $(SRC_DIR)/io/file_reader.cpp $(SRC_DIR)/io/file_writer.cpp
+SOURCES += $(SRC_DIR)/filter/simple_vector_filter.cpp $(SRC_DIR)/filter/multi_trie_filter.cpp
+SOURCES += $(SRC_DIR)/collections/word_trie.cpp
+SOURCES += $(SRC_DIR)/runner/incremental_filter_runner.cpp $(SRC_DIR)/runner/generator_runner.cpp $(SRC_DIR)/runner/runner.cpp $(SRC_DIR)/runner/oneshot_filter_runner.cpp $(SRC_DIR)/runner/benchmark_runner.cpp
+SOURCES += $(SRC_DIR)/gui/filter_window.cpp
+
+# imgui
+# -----
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 
@@ -82,13 +91,35 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-$(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
+# imgui
+# -----
 $(OBJ_DIR)/%.o:$(IMGUI_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.o:$(IMGUI_DIR)/backends/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# wolf
+# -----
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/collections/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/io/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/filter/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/runner/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o:$(SRC_DIR)/gui/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
