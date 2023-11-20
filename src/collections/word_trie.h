@@ -38,16 +38,21 @@ public:
     WordTrie();
     ~WordTrie();
 
+    WordTrie(const WordTrie &other);
+    WordTrie &operator=(const WordTrie &other);
+    WordTrie(WordTrie &&other);
+    WordTrie &operator=(WordTrie &&other);
+
     WTSession create_session() const;
 
     void insert_all(const std::string *first, const std::string *last);
     void insert(const std::string &word);
     void clear();
 
-    void push(WTSession *session, const std::string &prefix) const;
-    void pop(WTSession *session, usize count) const;
-    void collect(WTSession *session,
-                 std::vector<const std::string*> &collector, usize offset) const;
+    void push(WTSession &session, const std::string &prefix) const;
+    void pop(WTSession &session, usize count) const;
+    void collect(WTSession *session, std::vector<const std::string*> &collector,
+                 usize offset) const;
 
 private:
     WordTrieNode *root_;

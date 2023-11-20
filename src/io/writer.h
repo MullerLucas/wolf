@@ -13,6 +13,7 @@ namespace wolf {
 
 class Writer {
 public:
+    Writer() = default;
     virtual ~Writer() = default;
 
     virtual Writer &operator<<(const std::string& message) = 0;
@@ -26,6 +27,11 @@ public:
 
 protected:
     usize width_ = 0;
+
+    Writer(const Writer&) = default;
+    Writer &operator=(const Writer&) = default;
+    Writer(Writer&&) = default;
+    Writer &operator=(Writer&&) = default;
 };
 
 // ----------------------------------------------

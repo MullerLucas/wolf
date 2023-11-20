@@ -26,8 +26,6 @@ void SimpleVectorFilter::insert_all(const std::vector<std::string> *input)
 
     for (const auto& in : *input_)
         output_.push_back(&in);
-
-    // prefix_.clear();
 }
 
 void SimpleVectorFilter::push(const std::string &prefix)
@@ -54,8 +52,7 @@ void SimpleVectorFilter::push(const std::string &prefix)
 
     ThreadPool::await_futures(futures);
 
-    auto it = std::remove_if(output_.begin(), output_.end(),
-                             [](const std::string *str) {
+    auto it = std::remove_if(output_.begin(), output_.end(), [](const std::string *str) {
         return str == nullptr;
     });
     output_.erase(it, output_.end());

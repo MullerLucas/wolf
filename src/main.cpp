@@ -18,6 +18,7 @@
 #include "runner/oneshot_filter_runner.cpp"
 #include "runner/runner.cpp"
 #include "testing.cpp"
+#include "thread_pool.cpp"
 #include "utils.cpp"
 
 using namespace wolf;

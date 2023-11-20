@@ -29,6 +29,11 @@ public:
 
     FilterWindow(const char *title, usize width, usize height, float font_size);
 
+    FilterWindow(const FilterWindow&) = delete;
+    FilterWindow &operator=(const FilterWindow&) = delete;
+    FilterWindow(FilterWindow&&) = default;
+    FilterWindow &operator=(FilterWindow&&) = default;
+
     bool should_close() const;
     void create();
     void draw_frame();
@@ -39,8 +44,8 @@ public:
     void set_state(FilterWindowState *state);
 
 private:
-    static constexpr ImVec4 COLOR_HI_0_     = ImVec4( 0.9f,  0.7f,  0.0f,  1.0f);
-    static constexpr ImVec4 COLOR_CLEAR_    = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    static constexpr ImVec4 COLOR_HL_0_     = ImVec4( 0.9f,  0.7f,  0.0f,  1.0f);
+    static constexpr ImVec4 COLOR_ClR_      = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     const char  *title_     = "hell-app";
     usize       width_;

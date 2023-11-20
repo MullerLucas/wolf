@@ -136,10 +136,10 @@ void FilterWindow::draw_frame()
     int display_w, display_h;
     glfwGetFramebufferSize(window_, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
-    glClearColor(COLOR_CLEAR_.x * COLOR_CLEAR_.w,
-                 COLOR_CLEAR_.y * COLOR_CLEAR_.w,
-                 COLOR_CLEAR_.z * COLOR_CLEAR_.w,
-                 COLOR_CLEAR_.w);
+    glClearColor(COLOR_ClR_.x * COLOR_ClR_.w,
+                 COLOR_ClR_.y * COLOR_ClR_.w,
+                 COLOR_ClR_.z * COLOR_ClR_.w,
+                 COLOR_ClR_.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -224,11 +224,11 @@ void FilterWindow::draw_filter_window()
                 ImGui::PushFont(font_small_reg_);
                 ImGui::Text("Displaying");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HI_0_, "%zu", state_->view_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%zu", state_->view_word_count);
                 ImGui::SameLine();
                 ImGui::Text("out of");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HI_0_, "%zu", state_->curr_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%zu", state_->curr_word_count);
                 ImGui::SameLine(); ImGui::Text("words.");
                 ImGui::PopFont();
             }
@@ -278,15 +278,15 @@ void FilterWindow::draw_filter_window()
                 ImGui::PushFont(font_small_reg_);
                 ImGui::Text("From");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HI_0_, "%lu", state_->prev_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%lu", state_->prev_word_count);
                 ImGui::SameLine();
                 ImGui::Text("words, to");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HI_0_, "%lu", state_->curr_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%lu", state_->curr_word_count);
                 ImGui::SameLine();
                 ImGui::Text("words, in");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HI_0_, "%ld", (i64)state_->timings_us.back());
+                ImGui::TextColored(COLOR_HL_0_, "%ld", (i64)state_->timings_us.back());
                 ImGui::SameLine();
                 ImGui::Text("us!");
                 ImGui::PopFont();

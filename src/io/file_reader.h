@@ -15,6 +15,11 @@ public:
     FileReader(std::string file_name);
     ~FileReader() override;
 
+    FileReader(const FileReader&) = delete;
+    FileReader &operator=(const FileReader&) = delete;
+    FileReader(FileReader&&) = default;
+    FileReader &operator=(FileReader&&) = default;
+
     std::vector<std::string> read_lines() override;
 
 private:

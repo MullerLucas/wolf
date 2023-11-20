@@ -66,7 +66,7 @@ void MultiTrieFilter::push(MTFSession &session, const std::string &prefix)
     for (usize i = 0; i < thread_count_; ++i) {
         futures.emplace_back(
             pool_.enqueue([this, &session, &prefix, i]() {
-                tries_[i].push(&session.trie_sessions[i], prefix);
+                tries_[i].push(session.trie_sessions[i], prefix);
             })
         );
     }
@@ -83,7 +83,7 @@ void MultiTrieFilter::pop(MTFSession &session, usize count)
     for (usize i = 0; i < thread_count_; ++i) {
         futures.emplace_back(
             pool_.enqueue([this, &session, count, i]() {
-                tries_[i].pop(&session.trie_sessions[i], count);
+                tries_[i].pop(session.trie_sessions[i], count);
             })
         );
     }

@@ -1,6 +1,8 @@
 #include "../utils.h"
 #include "word_trie.h"
 #include <functional>
+#include <memory>
+#include <utility>
 
 namespace wolf {
 
@@ -14,6 +16,47 @@ WordTrie::WordTrie()
 WordTrie::~WordTrie()
 {
     clear();
+}
+
+WordTrie::WordTrie(const WordTrie &other)
+    : root_()
+{
+    std::function<WordTrieNode*(const WordTrieNode*, WordTrieNode*)> copy_node
+        = [&](const WordTrieNode *other_node, WordTrieNode* parent) -> WordTrieNode*
+    {
+        if (other_node == nullptr) return nullptr;
+
+        auto new_node = new WordTrieNode();
+        new_node->parent = parent;
+        new_node->word = other_node->word;
+        new_node->word_count = other_node->word_count;
+
+        for (const auto &[key, child] : other_node->children)
+            new_node->children[key] = copy_node(child, new_node);
+
+        return new_node;
+    };
+}
+
+WordTrie &WordTrie::operator=(const WordTrie &other)
+{
+    if (this != &other) {
+        WordTrie tmp(other);
+        std::swap(root_, tmp.root_);
+    }
+
+    return *this;
+}
+
+WordTrie::WordTrie(WordTrie &&other)
+    : root_(std::exchange(other.root_, nullptr))
+{ }
+
+WordTrie &WordTrie::operator=(WordTrie &&other)
+{
+    clear();
+    root_ = std::exchange(other.root_, nullptr);
+    return *this;
 }
 
 WTSession WordTrie::create_session() const
@@ -55,33 +98,33 @@ void WordTrie::clear()
     });
 }
 
-void WordTrie::push(WTSession *session, const std::string &prefix) const
+void WordTrie::push(WTSession &session, const std::string &prefix) const
 {
-    const auto session_is_valid = session->is_valid();
-    session->depth += prefix.size();
+    const auto session_is_valid = session.is_valid();
+    session.depth += prefix.size();
 
     if (!session_is_valid) return;
 
-    const auto tmp = find(session->valid_node, prefix);
+    const auto tmp = find(session.valid_node, prefix);
     // NOTE(lm): if the search failed, record the new depth but don't change
     //           the valid node
     if (tmp == nullptr) return;
 
-    session->valid_prefix += prefix;
-    session->valid_node = tmp;
+    session.valid_prefix += prefix;
+    session.valid_node = tmp;
 }
 
-void WordTrie::pop(WTSession *session, usize count) const
+void WordTrie::pop(WTSession &session, usize count) const
 {
-    if (session->depth == 0) return;
+    if (session.depth == 0) return;
 
-    count = std::min(count, session->depth);
-    session->depth -= count;
+    count = std::min(count, session.depth);
+    session.depth -= count;
 
-    const usize size = session->valid_prefix.size();
-    for (usize i = session->depth; i < size; i++) {
-        session->valid_prefix.pop_back();
-        session->valid_node = session->valid_node->parent;
+    const usize size = session.valid_prefix.size();
+    for (usize i = session.depth; i < size; i++) {
+        session.valid_prefix.pop_back();
+        session.valid_node = session.valid_node->parent;
     }
 }
 

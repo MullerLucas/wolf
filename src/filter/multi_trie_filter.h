@@ -27,6 +27,7 @@ public:
     MTFSession create_session() const;
 
     void insert_all(const std::vector<std::string> &unfiltered);
+
     void push(MTFSession &session, const std::string &prefix);
     void pop(MTFSession &session, usize count);
     void collect(MTFSession &session);
