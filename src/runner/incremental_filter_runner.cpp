@@ -12,7 +12,7 @@ namespace wolf {
 // ----------------------------------------------
 
 IncrementalFilterRunner::IncrementalFilterRunner(const Config *config)
-    : Runner(config), window_("hell-app", 640, 800, 32.0f)
+    : Runner(config), window_("WoLF", 640, 800, 32.0f)
 { }
 
 void IncrementalFilterRunner::run()
