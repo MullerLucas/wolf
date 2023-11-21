@@ -55,8 +55,7 @@ void Benchmark::run_any(
 {
     usize remaining = prefixes_.size() * thread_count_.size();
 
-    writer_.set_width(8);
-    for (const auto& p : prefixes_) {
+    for (const auto &p : prefixes_) {
         for (auto tc : thread_count_) {
             log_info("%zu sets remaining\n", remaining--);
 
@@ -68,7 +67,7 @@ void Benchmark::run_any(
             i64 best_destruct_time  = std::numeric_limits<i64>::max();
 
             for (usize i = 0; i < iterations_; ++i) {
-                auto result = fn(input_, p, tc);
+                const auto result = fn(input_, p, tc);
                 best_construct_time = std::min(best_construct_time, result.construct_time);
                 best_session_time   = std::min(best_session_time,   result.session_time);
                 best_insert_time    = std::min(best_insert_time,    result.insert_time);

@@ -278,11 +278,11 @@ void FilterWindow::draw_filter_window()
                 ImGui::PushFont(font_small_reg_);
                 ImGui::Text("From");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HL_0_, "%lu", state_->prev_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%zu", state_->prev_word_count);
                 ImGui::SameLine();
                 ImGui::Text("words, to");
                 ImGui::SameLine();
-                ImGui::TextColored(COLOR_HL_0_, "%lu", state_->curr_word_count);
+                ImGui::TextColored(COLOR_HL_0_, "%zu", state_->curr_word_count);
                 ImGui::SameLine();
                 ImGui::Text("words, in");
                 ImGui::SameLine();

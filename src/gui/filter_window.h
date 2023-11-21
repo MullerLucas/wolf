@@ -47,7 +47,7 @@ private:
     static constexpr ImVec4 COLOR_HL_0_     = ImVec4( 0.9f,  0.7f,  0.0f,  1.0f);
     static constexpr ImVec4 COLOR_ClR_      = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    const char  *title_     = "hell-app";
+    const char  *title_     = "WoLF";
     usize       width_;
     usize       height_;
     float       font_size_;
